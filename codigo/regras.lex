@@ -31,6 +31,9 @@ and return t_bool_and;
 or  return t_bool_or;
 not return t_bool_not;
 
+true   return t_bool_true;
+false  return t_bool_false;
+
 {NUM} {
   yylval.int_value = atoi(yytext);
   return t_integer_value;

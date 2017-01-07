@@ -19,7 +19,6 @@ extern void yyerror(char *s, ...);
 // yylval
 %union {
  int int_value;
- int bool_value;
  void * simbolo;
 }
 
@@ -32,8 +31,10 @@ extern void yyerror(char *s, ...);
 %token t_noop
 
 %token <int_value> t_integer_value
-%token <bool_value> t_boolean_value
+
 %token t_bool_and t_bool_or t_bool_not
+%token t_bool_true t_bool_false
+
 %token t_adicao t_subtracao t_multiplicacao t_divisao t_resto
 %token t_comparacao_menor t_comparacao_menor_igual
 %token t_operacao_maior t_operacao_maior_igual
@@ -56,22 +57,26 @@ definicao_variaveis: tipo definicao_variaveis_meio  {}
 definicao_variaveis_meio: definicao_variavel_meio definicao_variaveis_meio   {}
                         | definicao_variavel_meio definicao_variavel_fim     {}
 
-definicao_variavel_meio: t_variavel t_virgula      { logica_declarar_variavel($1); }
-definicao_variavel_fim: t_variavel t_ponto_virgula { logica_declarar_variavel($1); }
-
-tipo: t_integer | t_boolean {}
-
-// Erros
-erros: erro_atribuicao_palavras_reservadas {}
-| t_noop
+definicao_variavel_meio: t_variavel t_virgula        { logica_declarar_variavel($1); }
+|                        palavra_reservada t_virgula { erro_atribuicao_palavras_reservadas(); }
+|                        valor t_virgula             { erro_atribuicao_palavras_reservadas(); }
 ;
 
-erro_atribuicao_palavras_reservadas: tipo valor t_ponto_virgula {
-  char * mensagem = "Palavras reservadas e números são nomes de variáveis inválidos\n";
-  mensagem_erro(yy_nome_arquivo, yylineno, 0, mensagem);
-}
+definicao_variavel_fim: t_variavel t_ponto_virgula { logica_declarar_variavel($1); }
+|                       palavra_reservada t_ponto_virgula { erro_atribuicao_palavras_reservadas(); }
+|                       valor t_ponto_virgula { erro_atribuicao_palavras_reservadas(); }
+;
 
-valor: t_integer_value | t_boolean_value
+palavra_reservada: tipo
+tipo: t_integer | t_boolean
+
+valor: t_integer_value | boolean_valor
+boolean_valor: t_bool_true | t_bool_false
+
+// Erros
+erros: t_noop
+;
+
 %%
 
 int main() {
