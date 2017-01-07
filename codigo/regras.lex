@@ -4,10 +4,8 @@
 
 %top {
 #include "gramatica.tab.h"
-#include "codigo.h"
+#include "common.h"
 #include "tabela.h"
-#include "tokens.h"
-
 #include "mensagem.h"
 }
 
@@ -29,9 +27,9 @@ ID_INVALIDO {NUM}{ID}|{ID}
 int  return t_integer;
 bool return t_boolean;
 
-and return TOKEN_BOOLEANO_AND;
-or  return TOKEN_BOOLEANO_OR;
-not return TOKEN_BOOLEANO_NOT;
+and return t_bool_and;
+or  return t_bool_or;
+not return t_bool_not;
 
 {NUM} {
   yylval.int_value = atoi(yytext);
@@ -41,24 +39,24 @@ not return TOKEN_BOOLEANO_NOT;
   yylval.simbolo = tabela_adicionar(yytext);
   return t_variavel;
 }
-\+ return TOKEN_OPERACAO_SOMA;
--  return TOKEN_OPERACAO_SUBTRACAO;
-\* return TOKEN_OPERACAO_MULTIPLICACAO;
-\/ return TOKEN_OPERACAO_DIVISAO;
-\% return TOKEN_OPERACAO_RESTO;
+\+ return t_adicao;
+-  return t_subtracao;
+\* return t_multiplicacao;
+\/ return t_divisao;
+\% return t_resto;
 
-\<  return TOKEN_OPERACAO_MENOR;
-\<= return TOKEN_OPERACAO_MENOR_IGUAL;
-\>  return TOKEN_OPERACAO_MAIOR;
-\>= return TOKEN_OPERACAO_MAIOR_IGUAL;
+\<  return t_comparacao_menor;
+\<= return t_comparacao_menor_igual;
+\>  return t_operacao_maior;
+\>= return t_operacao_maior_igual;
 
-==  return TOKEN_OPERACAO_COMPARACAO_IGUAL;
-!=  return TOKEN_OPERACAO_COMPARACAO_DIFERENTE;
+==  return t_comparacao_igual;
+!=  return t_comparacao_diferente;
 
-=   return TOKEN_OPERACAO_ATRIBUICAO;
+=   return t_atribuicao;
 
-\(  return TOKEN_PONTUACAO_PARENTESE_ESQUERDO;
-\)  return TOKEN_PONTUACAO_PARENTESE_DIREITO;
+\(  return t_abre_parecente;
+\)  return t_fecha_parentese;
 ,   return t_virgula;
 ;   return t_ponto_virgula;
 

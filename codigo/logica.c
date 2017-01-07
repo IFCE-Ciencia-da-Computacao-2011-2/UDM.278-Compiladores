@@ -1,5 +1,6 @@
 #include "logica.h"
-#include "codigo.h"
+
+#include "common.h"
 #include "mensagem.h"
 
 void logica_declarar_variavel(Simbolo * simbolo) {

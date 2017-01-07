@@ -34,10 +34,10 @@ Simbolo * tabela_adicionar(char * nome_variavel) {
   if (simbolo != NULL)
     return simbolo;
 
-  if (total_simbolos > MAX_SIMBOLOS) {
-    fprintf(stderr, "Limite máximo de símbolos armazenáveis na tabela de símbolos foi ultrapassado.\n");
-    fprintf(stderr, "Para estabelecer um novo limite, verifique o arquivo %s‘%s’%s.\n", "\033[0;91m", "tabela.h", "\033[0;31m");
-    fprintf(stderr, "Limite do compilador: %s%d%s\n", "\033[0;91m", MAX_SIMBOLOS, "\033[0;31m");
+  if (total_simbolos >= MAX_SIMBOLOS) {
+    fprintf(stderr, "%sERRO: Limite máximo de símbolos armazenáveis na tabela de símbolos foi ultrapassado.\n", "\033[0;31m");
+    fprintf(stderr, "      Para estabelecer um novo limite, verifique o arquivo %s‘%s’%s.\n", "\033[0;91m", "tabela.h", "\033[0;31m");
+    fprintf(stderr, "      Limite do compilador: %s%d%s\n", "\033[0;91m", MAX_SIMBOLOS, "\033[0;31m");
     exit(1);
   }
 

@@ -2,7 +2,7 @@
 
 #define __TABELA_H
 
-#define MAX_SIMBOLOS  3
+#define MAX_SIMBOLOS  300
 
 typedef struct Simbolo {
   int id;

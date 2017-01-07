@@ -3,35 +3,10 @@
 
 #include <stdarg.h>
 
-#include "codigo.h"
 #include "mensagem.h"
+
 #include "gramatica.tab.h"
 
-/*
-void update_localization() {
-    static int curr_line = 1;
-    static int curr_col  = 1;
-
-    printf("aaa");
-    yylloc.first_line   = curr_line;
-    yylloc.first_column = curr_col;
-
-    {
-        char * s;
-        for (s = yytext; *s != '\0'; s++) {
-            if (*s == '\n') {
-                curr_line++;
-                curr_col = 1;
-            } else {
-                curr_col++;
-            }
-        }
-    }
-
-    yylloc.last_line   = curr_line;
-    yylloc.last_column = curr_col-1;
-}
-*/
 
 // https://latedev.wordpress.com/2012/10/29/understanding-printf/
 char * mensagem_preparar(const char * fmt, ...) {
@@ -51,6 +26,9 @@ char * mensagem_preparar(const char * fmt, ...) {
 }
 
 void mensagem_erro(char * nome_arquivo, int linha, int coluna, char * mensagem, ...) {
+    if (nome_arquivo == NULL)
+      nome_arquivo = "interpretador";
+
     mensagem_cabecalho(stderr, nome_arquivo, linha, coluna);
     fprintf(stderr, "\033[1;31merro:\033[0m ");
     fprintf(stderr, "%s", mensagem);

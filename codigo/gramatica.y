@@ -3,11 +3,11 @@
 #include <stdarg.h>
 
 #include "tabela.h"
-
-#include "regras.tab.h"
-#include "codigo.h"
+#include "common.h"
 #include "mensagem.h"
 #include "logica.h"
+
+#include "regras.tab.h"
 
 extern int yylex();
 extern void yyerror(char *s, ...);
@@ -33,14 +33,15 @@ extern void yyerror(char *s, ...);
 
 %token <int_value> t_integer_value
 %token <bool_value> t_boolean_value
-%token TOKEN_BOOLEANO_AND TOKEN_BOOLEANO_OR TOKEN_BOOLEANO_NOT
-%token TOKEN_OPERACAO_SOMA TOKEN_OPERACAO_SUBTRACAO TOKEN_OPERACAO_MULTIPLICACAO TOKEN_OPERACAO_DIVISAO TOKEN_OPERACAO_RESTO
-%token TOKEN_OPERACAO_MENOR TOKEN_OPERACAO_MENOR_IGUAL TOKEN_OPERACAO_MAIOR TOKEN_OPERACAO_MAIOR_IGUAL
-%token TOKEN_OPERACAO_COMPARACAO_IGUAL TOKEN_OPERACAO_COMPARACAO_DIFERENTE
+%token t_bool_and t_bool_or t_bool_not
+%token t_adicao t_subtracao t_multiplicacao t_divisao t_resto
+%token t_comparacao_menor t_comparacao_menor_igual
+%token t_operacao_maior t_operacao_maior_igual
+%token t_comparacao_igual t_comparacao_diferente
 
-%token TOKEN_OPERACAO_ATRIBUICAO
+%token t_atribuicao
 
-%token TOKEN_PONTUACAO_PARENTESE_ESQUERDO TOKEN_PONTUACAO_PARENTESE_DIREITO t_virgula t_ponto_virgula
+%token t_abre_parecente t_fecha_parentese t_virgula t_ponto_virgula
 
 %%
 codigo:

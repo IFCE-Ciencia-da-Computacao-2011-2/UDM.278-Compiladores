@@ -5,8 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-extern void update_localization();
-
 extern char * mensagem_preparar(const char * fmt, ...);
 extern void mensagem_erro(char * nome_arquivo, int linha, int coluna, char * mensagem, ...);
 extern void mensagem_cabecalho(FILE * arquivo, char * nome_arquivo, int linha, int coluna);
