@@ -32,6 +32,17 @@ class AtribuicaoBooleanoTest(Test):
         operacoes = ['<', '<=', '>', '>=', '==', '!=']
         for operacao in operacoes:
             self.assert_not_raises_error(mensagem.format(operacao))
+    
+    def test_operacao_parenteses(self):
+        mensagem = """
+        int a, b;
+        bool c;
+        a = 0;
+        b = 3;
+        c = a < (b + 3);
+        """
+
+        self.assert_not_raises_error(mensagem)
 
     def test_atribuicao_valor_inteiro_em_variavel_booleana(self):
         erro = 'macarronada'

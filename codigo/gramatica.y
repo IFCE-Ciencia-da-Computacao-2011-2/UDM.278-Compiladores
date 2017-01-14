@@ -32,17 +32,20 @@ extern void yyerror(char *s, ...);
 
 %token <int_value> t_integer_value
 
-%token t_bool_and t_bool_or t_bool_not
 %token t_bool_true t_bool_false
 
-%token t_adicao t_subtracao t_multiplicacao t_divisao t_resto
-%token t_comparacao_menor t_comparacao_menor_igual
-%token t_operacao_maior t_operacao_maior_igual
-%token t_comparacao_igual t_comparacao_diferente
-
-%token t_atribuicao
-
 %token t_abre_parentese t_fecha_parentese t_virgula t_ponto_virgula
+
+// Mais prioritário vem primeiro
+%right t_atribuicao
+
+%left t_bool_not
+%left t_bool_and t_bool_or
+%left t_comparacao_igual t_comparacao_diferente
+%left t_comparacao_menor t_comparacao_menor_igual t_operacao_maior t_operacao_maior_igual
+%left t_adicao t_subtracao
+%left t_multiplicacao t_divisao t_resto
+
 
 %%
 codigo:
@@ -52,57 +55,73 @@ codigo:
 ;
 
 // Definições
-definicao_variaveis: tipo definicao_variaveis_meio  {}
-|                    tipo definicao_variavel_fim    {}
+definicao_variaveis
+: tipo definicao_variaveis_meio      
+| tipo definicao_variavel_fim
 ;
 
-definicao_variaveis_meio: definicao_variavel_meio definicao_variaveis_meio   {}
-                        | definicao_variavel_meio definicao_variavel_fim     {}
-
-definicao_variavel_meio: t_variavel t_virgula        { logica_declarar_variavel($1); }
-|                        palavra_reservada t_virgula { erro_atribuicao_palavras_reservadas(); }
-|                        valor t_virgula             { erro_atribuicao_palavras_reservadas(); }
+definicao_variaveis_meio
+: definicao_variavel_meio definicao_variaveis_meio
+| definicao_variavel_meio definicao_variavel_fim
 ;
 
-definicao_variavel_fim: t_variavel t_ponto_virgula { logica_declarar_variavel($1); }
-|                       palavra_reservada t_ponto_virgula { erro_atribuicao_palavras_reservadas(); }
-|                       valor t_ponto_virgula { erro_atribuicao_palavras_reservadas(); }
+definicao_variavel_meio
+: t_variavel t_virgula        { logica_declarar_variavel($1);}
+| palavra_reservada t_virgula { erro_atribuicao_palavras_reservadas(); }
+| atomo t_virgula             { erro_atribuicao_palavras_reservadas(); }
+;
+
+definicao_variavel_fim
+: t_variavel t_ponto_virgula { logica_declarar_variavel($1); }
+| palavra_reservada t_ponto_virgula { erro_atribuicao_palavras_reservadas(); }
+| atomo t_ponto_virgula { erro_atribuicao_palavras_reservadas(); }
 ;
 
 palavra_reservada: tipo
 tipo: t_integer | t_boolean
 
-valor: t_integer_value | boolean_valor
-boolean_valor: t_bool_true | t_bool_false
+atomo: t_integer_value | atomo_boolean
+atomo_boolean: t_bool_true | t_bool_false
 
 // Erros
 erros: t_noop
 ;
 
 // Atribuições
-atribuicoes: atribuicoes atribuicao t_ponto_virgula
-|            atribuicao t_ponto_virgula
-
-atribuicao: t_variavel t_atribuicao expressao       {logica_atribuir_variavel($1, NULL);}
+atribuicoes
+: atribuicoes atribuicao t_ponto_virgula
+| atribuicao t_ponto_virgula
 ;
 
-expressao: t_abre_parentese expressao t_fecha_parentese
-|          expressao operacao_meio expressao
-|          operacao_inicio expressao
-|          t_variavel
-|          valor
+atribuicoes: atribuicao
+
+atribuicao
+: t_variavel t_atribuicao expressao       {logica_atribuir_variavel($1, NULL);}
 ;
 
-operacao_meio: operacao_meio_inteiro
-|              operacao_meio_booleano
+// Mais prioritário vem por último ?
+expressao
+: atomo
+| t_variavel
+// Inteiro
+| expressao t_adicao expressao
+| expressao t_subtracao expressao
+| expressao t_multiplicacao expressao
+| expressao t_divisao expressao
+| expressao t_resto expressao
+// Booleano
+| expressao t_operacao_maior_igual expressao
+| expressao t_operacao_maior expressao
+| expressao t_comparacao_menor_igual expressao
+| expressao t_comparacao_menor expressao
+| expressao t_comparacao_diferente expressao
+| expressao t_comparacao_igual expressao
+| expressao t_bool_or expressao
+| expressao t_bool_and expressao
+| t_bool_not expressao
+| t_abre_parentese expressao t_fecha_parentese
 ;
 
-operacao_meio_inteiro: t_adicao | t_subtracao | t_multiplicacao | t_divisao | t_resto
-|                      t_comparacao_menor | t_comparacao_menor_igual | t_operacao_maior | t_operacao_maior_igual
-|                      t_comparacao_igual | t_comparacao_diferente
-
-operacao_meio_booleano: t_bool_and t_bool_or
-operacao_inicio: t_bool_not
 %%
 
 int main() {

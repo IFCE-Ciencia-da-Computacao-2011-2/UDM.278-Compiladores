@@ -37,7 +37,7 @@ python3 test.py
 ```
 # Acceptable
 int a, b, c;
-int a, b, c;
+int a, b; bool c;
 # Unnacceptable
 a int
 int a, b, c
