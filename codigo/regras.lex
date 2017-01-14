@@ -88,4 +88,6 @@ false  return t_bool_false;
     return t_noop;
 }
 
+<<EOF>> { return t_eof; }
+
 %%
