@@ -12,9 +12,12 @@
 NUM [0-9]+
 EXP ([Ee][-+]?[0-9]+)
 FLOAT ([0-9]*\.{NUM}|{NUM}\.){EXP}?
-ID  [[:alpha:]]([[:alnum:]]|\_)*{0,31}
 
-ID_INVALIDO {NUM}{ID}|{ID}
+ID_CARACTERES_VALIDOS  ([[:alnum:]]|\_)
+ID_CARACTERES_INVALIDOS  (\.)
+
+ID  [[:alpha:]]({ID_CARACTERES_VALIDOS})*{0,31}
+ID_INVALIDO {NUM}{ID}|({ID}{ID_CARACTERES_INVALIDOS}{ID})+
 %%
 
 \n.* {
@@ -37,11 +40,8 @@ false  return t_bool_false;
 {NUM} {
   yylval.int_value = atoi(yytext);
   return t_integer_value;
-};
-{ID}  {
-  yylval.simbolo = tabela_adicionar(yytext);
-  return t_variavel;
 }
+
 \+ return t_adicao;
 -  return t_subtracao;
 \* return t_multiplicacao;
@@ -58,7 +58,7 @@ false  return t_bool_false;
 
 =   return t_atribuicao;
 
-\(  return t_abre_parecente;
+\(  return t_abre_parentese;
 \)  return t_fecha_parentese;
 ,   return t_virgula;
 ;   return t_ponto_virgula;
@@ -69,6 +69,12 @@ false  return t_bool_false;
     free(mensagem);
     return t_noop;
 }
+
+{ID}  {
+  yylval.simbolo = tabela_adicionar(yytext);
+  return t_variavel;
+}
+
 {FLOAT} {
     char * mensagem = mensagem_preparar("%s‘%s’%s - Pontos flutuantes não são aceitos pela linguagem\n", "\033[1;97m", yytext, "\033[0m");
     mensagem_erro(yy_nome_arquivo, yylineno, 0, mensagem);

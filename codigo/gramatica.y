@@ -42,14 +42,16 @@ extern void yyerror(char *s, ...);
 
 %token t_atribuicao
 
-%token t_abre_parecente t_fecha_parentese t_virgula t_ponto_virgula
+%token t_abre_parentese t_fecha_parentese t_virgula t_ponto_virgula
 
 %%
 codigo:
 | definicao_variaveis codigo
 | erros codigo
+| atribuicoes
 ;
 
+// Definições
 definicao_variaveis: tipo definicao_variaveis_meio  {}
 |                    tipo definicao_variavel_fim    {}
 ;
@@ -77,11 +79,41 @@ boolean_valor: t_bool_true | t_bool_false
 erros: t_noop
 ;
 
+// Atribuições
+atribuicoes: atribuicoes atribuicao t_ponto_virgula
+|            atribuicao t_ponto_virgula
+
+atribuicao: t_variavel t_atribuicao expressao       {logica_atribuir_variavel($1, NULL);}
+;
+
+expressao: t_abre_parentese expressao t_fecha_parentese
+|          expressao operacao_meio expressao
+|          operacao_inicio expressao
+|          t_variavel
+|          valor
+;
+
+operacao_meio: operacao_meio_inteiro
+|              operacao_meio_booleano
+;
+
+operacao_meio_inteiro: t_adicao | t_subtracao | t_multiplicacao | t_divisao | t_resto
+|                      t_comparacao_menor | t_comparacao_menor_igual | t_operacao_maior | t_operacao_maior_igual
+|                      t_comparacao_igual | t_comparacao_diferente
+
+operacao_meio_booleano: t_bool_and t_bool_or
+operacao_inicio: t_bool_not
 %%
 
 int main() {
   printf("Vando 0.0.1 (64-bit)\n");
   printf("[GCC ?.?.?] on linux\n");
 
-	return yyparse();
+  // a [label="node"]; b [label="node"]; a->b
+  printf("\n");
+  printf("digraph program {\n");
+
+  return yyparse();
+  
+  printf("}");
 }

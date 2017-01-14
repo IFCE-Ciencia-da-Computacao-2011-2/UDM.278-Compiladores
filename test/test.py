@@ -13,7 +13,7 @@ class Test(unittest.TestCase):
 
         out, error = process.communicate()
 
-        return out.decode('UTF-8'), error.decode('UTF-8').strip()
+        return out.decode('UTF-8'), error.decode('UTF-8', 'ignore').strip()
 
     def escape(self, message):
         return re.compile(r'\x1b[^m]*m').sub('', message)
@@ -24,3 +24,6 @@ class Test(unittest.TestCase):
         print(process_error)
 
         self.assertEqual(error.strip(), self.escape(process_error))
+
+    def assert_not_raises_error(self, code):
+        self.assert_raises_error(code, '')

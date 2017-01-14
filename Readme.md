@@ -72,5 +72,20 @@ d = not 2;
 ```
 
 ```
-?
+ATRIBUICAO -> VARIAVEL = EXPRESSAO
+EXPRESSAO  -> EXPRESSAO
+           |  OPERACAO_INICIO EXPRESSAO
+           |  ( EXPRESSAO )
+
+OPERACAO_INICIO -> not
+
+// Definir ordem
+OPERACAO_MEIO -> <
+              |  <=
+              |  >
+              |  >=
+              |  ==
+              |  !=
+              |  and
+              |  or
 ```

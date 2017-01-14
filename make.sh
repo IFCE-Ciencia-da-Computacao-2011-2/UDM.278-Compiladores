@@ -10,4 +10,4 @@ flex regras.lex
 gcc -o vando regras.tab.c logica.c tabela.c gramatica.tab.c mensagem.c
 mv vando ..
 cd ..
-./vando
+python3 test.py
