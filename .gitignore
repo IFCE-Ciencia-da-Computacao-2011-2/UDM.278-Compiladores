@@ -1,3 +1,4 @@
 *.tab.*
 material apoio/*
 vando
+__pycache__

@@ -1,11 +1,24 @@
 # Vando - Trabalho 1 de 2 de compiladores
 
-## Executar
+## Execute
 
 ```bash
 # Em Tools > Terminal
 sh make.sh
 ```
+
+## Tests
+
+### Execute
+
+```bash
+python3 test.py
+```
+
+### Add new tests
+
+1. Add a method in a `test/*_test.py` file or create a new `test/*_test.py` extending `Test` (`test/test.py`);
+2. If a new test class has been created, import it in `./test.py`.
 
 ## References
  * **Codio SSH**: https://codio.com/docs/ide/boxes/access/ssh-access/
@@ -47,3 +60,17 @@ TIPO -> int | bool
 ### Numerical expressions
 
 ### Boolean expressions
+
+```
+# Acceptable
+a = true;
+a = false;
+b = a < a2;
+c = not a;
+# Unnacceptable
+d = not 2;
+```
+
+```
+?
+```
