@@ -4,15 +4,21 @@
 
 #define MAX_SIMBOLOS  300
 
+typedef enum {SIMBOLO_TIPO_INTEIRO, SIMBOLO_TIPO_BOOLEANO} SimboloTipo;
+
+extern const char * SimboloTipoDecricao[];
+
+typedef enum {FALSE, TRUE} Boolean;
+
 typedef struct Simbolo {
   int id;
   char nome[32];
-  int tipo;
-  int atribuido;
+  SimboloTipo tipo;
+  Boolean atribuido;
 
   union {
     int integer;
-    int boolean;
+    Boolean boolean;
   } valor;
 } Simbolo;
 

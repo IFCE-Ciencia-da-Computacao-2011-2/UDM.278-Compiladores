@@ -27,14 +27,14 @@ extern void yyerror(char *s, ...);
 
  // Identificador de variável na tabela de símbolos
  Simbolo * simbolo;
+ 
+ // Definir tipo de uma variável
+ SimboloTipo tipo;
 
  // Valor de expressão
  //   que não foi totalmente processada e enviada para a
  //   tabela de símbolos através de uma atribuição à uma variável
- struct {
-   NohAST no;
-   Simbolo expressao_simbolo;
- };
+ NoAST * no;
 }
 
 // http://www.gnu.org/software/bison/manual/html_node/Token-Decl.html#Token-Decl
@@ -64,8 +64,9 @@ extern void yyerror(char *s, ...);
 %left t_multiplicacao t_divisao t_resto
 
 // Tokens da gramática: Elementos não terminais
-%type<expressao_simbolo> expressao
-
+%type<simbolo> definicao_variavel_meio definicao_variavel_fim
+%type<no> atomo atomo_boolean expressao
+%type<tipo> tipo
 
 %%
 codigo:
@@ -79,8 +80,8 @@ fim_codigo: t_eof { ast_imprimir(); exit(0); }
 
 // Definições
 definicao_variaveis
-: tipo definicao_variaveis_meio      
-| tipo definicao_variavel_fim
+: tipo definicao_variaveis_meio
+| tipo definicao_variavel_fim    { logica_definir_tipo($2, $1); }
 ;
 
 definicao_variaveis_meio
@@ -89,27 +90,29 @@ definicao_variaveis_meio
 ;
 
 definicao_variavel_meio
-: t_variavel t_virgula        { logica_declarar_variavel($1); }
+: t_variavel t_virgula        { logica_declarar_variavel($1); $$ = $1;}
 | palavra_reservada t_virgula { erro_atribuicao_palavras_reservadas(); }
 | atomo t_virgula             { erro_atribuicao_palavras_reservadas(); }
 ;
 
 definicao_variavel_fim
-: t_variavel t_ponto_virgula { logica_declarar_variavel($1); }
+: t_variavel t_ponto_virgula { logica_declarar_variavel($1); $$ = $1; }
 | palavra_reservada t_ponto_virgula { erro_atribuicao_palavras_reservadas(); }
 | atomo t_ponto_virgula { erro_atribuicao_palavras_reservadas(); }
 ;
 
 palavra_reservada: tipo
-tipo: t_integer | t_boolean
+tipo
+: t_integer {$$ = SIMBOLO_TIPO_INTEIRO;}
+| t_boolean {$$ = SIMBOLO_TIPO_BOOLEANO;}
 
 atomo
-: t_integer_value
-| atomo_boolean
+: t_integer_value {$$ = no_new_constante($1, SIMBOLO_TIPO_INTEIRO); }
+| atomo_boolean   {$$ = $1; }
 ;
 atomo_boolean
-: t_bool_true  //{$$ = $1}
-| t_bool_false //{$$ = $1}
+: t_bool_true  {$$ = no_new_constante(TRUE, SIMBOLO_TIPO_BOOLEANO); }
+| t_bool_false {$$ = no_new_constante(FALSE, SIMBOLO_TIPO_BOOLEANO);}
 ;
 
 // Erros
@@ -123,13 +126,12 @@ atribuicoes
 ;
 
 atribuicao
-: t_variavel t_atribuicao expressao       {logica_atribuir_variavel($1, NULL);}
+: t_variavel t_atribuicao expressao       {logica_atribuir_variavel($1, $3);}
 ;
 
 // Mais prioritário vem por último ?
 expressao
-//: atomo
-: t_integer_value {$$ = new_ast_number_node($1);}
+: atomo           {$$ = $1;}
 | t_variavel      {}
 // Inteiro
 | expressao t_adicao expressao
@@ -138,7 +140,7 @@ expressao
 | expressao t_divisao expressao
 | expressao t_resto expressao
 // Booleano
-| expressao t_operacao_maior_igual expressao
+| expressao t_operacao_maior_igual expressao  { $$ = no_new_operacao_meio($1, $3, ">="); }
 | expressao t_operacao_maior expressao
 | expressao t_comparacao_menor_igual expressao
 | expressao t_comparacao_menor expressao
