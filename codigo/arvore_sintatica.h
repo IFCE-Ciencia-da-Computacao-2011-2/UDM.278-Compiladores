@@ -8,6 +8,7 @@
 
 typedef enum {
     AST_TIPO_CONSTANTE, AST_TIPO_REFERENCIA,
+    AST_TIPO_ATRIBUICAO,
     AST_TIPO_DELIMITADOR,
     AST_TIPO_OPERACAO_MEIO, AST_TIPO_OPERACAO_INICIO,
     AST_TIPO_PARENTESES
@@ -30,6 +31,11 @@ typedef struct {
 typedef struct {
   Simbolo * simbolo;
 } NoReferenciaAST;
+
+typedef struct {
+  Simbolo * simbolo;
+  NoAST * no_expressao;
+} NoAtribuicaoAST;
 
 typedef struct {
   char valor;

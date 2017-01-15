@@ -12,6 +12,7 @@ static FuncaoImpressao impressao_factory(NoAST * no);
 
 static void ast_imprimir_tipo_constante(NoAST * no);
 static void ast_imprimir_tipo_operacao_meio(NoAST * no);
+static void ast_imprimir_tipo_atribuicao(NoAST * no);
 
 //////////////////////////////
 // Identificador
@@ -30,14 +31,12 @@ static char * gerar_identificador(char * nome) {
 
 void ast_imprimir(NoAST * raiz) {
     printf("Insira o código a seguir em http://www.webgraphviz.com/\n");
-    
-    // a [label="node"]; b [label="node"]; a->b
     printf("\n");
     printf("digraph program {\n");
     
-    raiz->pai_identificador = "RAIZ__expressao__provisorio";
+    raiz->pai_identificador = "atribuicao";
     FuncaoImpressao imprimir = impressao_factory(raiz);
-
+    
     if (imprimir != NULL)
         imprimir(raiz);
 
@@ -49,6 +48,8 @@ static FuncaoImpressao impressao_factory(NoAST * no) {
         return *ast_imprimir_tipo_constante;
     if (no->tipo == AST_TIPO_OPERACAO_MEIO)
         return *ast_imprimir_tipo_operacao_meio;
+    if (no->tipo == AST_TIPO_ATRIBUICAO)
+        return *ast_imprimir_tipo_atribuicao;
 
     return NULL;
 }
@@ -64,12 +65,12 @@ static void ast_imprimir_tipo_constante(NoAST * no) {
         printf("%s -> %s; \n", no->pai_identificador, no->identificador);
 
     // Valor
-    printf("%s [label=\"%s\"]; ", no->identificador, "atomo");
+    printf("%s [label=\"%s\"]; \n", no->identificador, "atomo");
 
     if (no->simbolo_tipo == SIMBOLO_TIPO_INTEIRO)
-        printf("%s [label=\"%d\"]; ", constante_identificador, constante->valor);
+        printf("%s [label=\"%d\"]; \n", constante_identificador, constante->valor);
     else
-        printf("%s [label=\"%s\"]; ", constante_identificador, constante->valor == FALSE ? "false" : "true");
+        printf("%s [label=\"%s\"]; \n", constante_identificador, constante->valor == FALSE ? "false" : "true");
 
     printf("%s -> %s; \n", no->identificador, constante_identificador);
 
@@ -91,7 +92,7 @@ static void ast_imprimir_tipo_operacao_meio(NoAST * no) {
     // Reaproveita o do pai. Por isso, não desaloca no fim
 
     // Esquerda
-    printf("%s [label=\"%s\"]; ", expressao_esquerda_identificador, "expressao");
+    printf("%s [label=\"%s\"]; \n", expressao_esquerda_identificador, "expressao");
     printf("%s -> %s; \n", no->identificador, expressao_esquerda_identificador);
 
     operacao_meio->no_esquerdo->pai_identificador = expressao_esquerda_identificador;
@@ -99,11 +100,11 @@ static void ast_imprimir_tipo_operacao_meio(NoAST * no) {
     imprimir(operacao_meio->no_esquerdo);
 
     // Meio
-    printf("%s [label=\"%s\"]; ", operacao_identificador, operacao_meio->operacao);
+    printf("%s [label=\"%s\"]; \n", operacao_identificador, operacao_meio->operacao);
     printf("%s -> %s; \n", no->identificador, operacao_identificador);
 
     // Direita
-    printf("%s [label=\"%s\"]; ", expressao_direita_identificador, "expressao");
+    printf("%s [label=\"%s\"]; \n", expressao_direita_identificador, "expressao");
     printf("%s -> %s; \n", no->identificador, expressao_direita_identificador);
 
     operacao_meio->no_direito->pai_identificador = expressao_direita_identificador;
@@ -113,4 +114,48 @@ static void ast_imprimir_tipo_operacao_meio(NoAST * no) {
     free(expressao_esquerda_identificador);
     free(expressao_direita_identificador);
     free(operacao_identificador);
+}
+
+static void ast_imprimir_tipo_atribuicao(NoAST * no) {
+    // t_variavel t_atribuicao expressao t_ponto_virgula
+    NoAtribuicaoAST * atribuicao = (NoAtribuicaoAST *) no->no;
+
+    char * variavel_identificador = gerar_identificador("variavel");
+    char * atribuicao_identificador = gerar_identificador("atribuicao");
+    char * expressao_identificador = gerar_identificador("expressao");
+    char * ponto_virgula_identificador = gerar_identificador("ponto_virgula");
+    
+    no->identificador = no->pai_identificador;
+
+    // Variável
+    printf("%s [label=\"%s\"]; \n", variavel_identificador, "t_variavel");
+    printf("%s -> %s; \n", variavel_identificador, atribuicao->simbolo->nome);
+    //  Pai -> Variável
+    printf("%s -> %s; \n", no->identificador, variavel_identificador);
+    
+    // Atribuição (=)
+    printf("%s [label=\"%s\"]; \n", atribuicao_identificador, "=");
+    //  Pai -> "="
+    printf("%s -> %s; \n", no->identificador, atribuicao_identificador);
+
+    // Expressão
+    printf("%s [label=\"%s\"]; \n", expressao_identificador, "expressao");
+    
+    atribuicao->no_expressao->pai_identificador = expressao_identificador;
+    FuncaoImpressao imprimir = impressao_factory(atribuicao->no_expressao);
+    imprimir(atribuicao->no_expressao);
+    
+    //  Pai -> expressao
+    printf("%s -> %s; \n", no->identificador, expressao_identificador);
+    
+    // Ponto vírgula
+    printf("%s [label=\"%s\"]; \n", ponto_virgula_identificador, ";");
+    //  Pai -> ";"
+    printf("%s -> %s; \n", no->identificador, ponto_virgula_identificador);
+
+    
+    free(variavel_identificador);
+    free(atribuicao_identificador);
+    free(expressao_identificador);
+    free(ponto_virgula_identificador);
 }

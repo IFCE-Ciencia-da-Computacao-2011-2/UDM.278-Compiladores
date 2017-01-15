@@ -53,15 +53,15 @@ extern void yyerror(char *s, ...);
 
 %token t_abre_parentese t_fecha_parentese t_virgula t_ponto_virgula
 
-// Mais prioritário vem primeiro
+// Mais prioritário vem por último
 %right t_atribuicao
 
 %left t_bool_not
 %left t_bool_and t_bool_or
-%left t_comparacao_igual t_comparacao_diferente
 %left t_comparacao_menor t_comparacao_menor_igual t_operacao_maior t_operacao_maior_igual
-%left t_adicao t_subtracao
-%left t_multiplicacao t_divisao t_resto
+%left t_comparacao_igual t_comparacao_diferente
+%left t_adicao t_subtracao               // Verificar prioridade
+%left t_multiplicacao t_divisao t_resto  // Verificar prioridade
 
 // Tokens da gramática: Elementos não terminais
 %type<simbolo> definicao_variavel_meio definicao_variavel_fim
@@ -121,35 +121,35 @@ erros: t_noop
 
 // Atribuições
 atribuicoes
-: atribuicoes atribuicao t_ponto_virgula
-| atribuicao t_ponto_virgula
+: atribuicoes atribuicao
+| atribuicao 
 ;
 
 atribuicao
-: t_variavel t_atribuicao expressao   {logica_atribuir_variavel($1, $3); $$ = no_new_atribuicao($1, $3); /* ast_imprimir($$); */ }
+: t_variavel t_atribuicao expressao t_ponto_virgula  {logica_atribuir_variavel($1, $3); $$ = no_new_atribuicao($1, $3); ast_imprimir($$); }
 ;
 
 // Mais prioritário vem por último ?
 expressao
-: atomo           {$$ = $1; }
-| t_variavel      {$$ = no_new_referencia($1);}
+: atomo           { $$ = $1; }
+| t_variavel      { $$ = no_new_referencia($1); }
 // Inteiro
-| expressao t_adicao expressao        { $$ = no_new_operacao_meio_inteiro($1, $3, "+", SIMBOLO_TIPO_INTEIRO); }
-| expressao t_subtracao expressao
-| expressao t_multiplicacao expressao
-| expressao t_divisao expressao
-| expressao t_resto expressao
+| expressao t_adicao expressao          { $$ = no_new_operacao_meio_inteiro($1, $3, "+", SIMBOLO_TIPO_INTEIRO); }
+| expressao t_subtracao expressao       { $$ = no_new_operacao_meio_inteiro($1, $3, "-", SIMBOLO_TIPO_INTEIRO); }
+| expressao t_multiplicacao expressao   { $$ = no_new_operacao_meio_inteiro($1, $3, "*", SIMBOLO_TIPO_INTEIRO); }
+| expressao t_divisao expressao         { $$ = no_new_operacao_meio_inteiro($1, $3, "/", SIMBOLO_TIPO_INTEIRO); }
+| expressao t_resto expressao           { $$ = no_new_operacao_meio_inteiro($1, $3, "", SIMBOLO_TIPO_INTEIRO); }
 // Booleano
-| expressao t_operacao_maior_igual expressao     { $$ = no_new_operacao_meio_inteiro($1, $3, ">=", SIMBOLO_TIPO_BOOLEANO); ast_imprimir($$); }
+| expressao t_operacao_maior_igual expressao     { $$ = no_new_operacao_meio_inteiro($1, $3, ">=", SIMBOLO_TIPO_BOOLEANO); }
 | expressao t_operacao_maior expressao           { $$ = no_new_operacao_meio_inteiro($1, $3, ">", SIMBOLO_TIPO_BOOLEANO); }
 | expressao t_comparacao_menor_igual expressao   { $$ = no_new_operacao_meio_inteiro($1, $3, "<=", SIMBOLO_TIPO_BOOLEANO); }
 | expressao t_comparacao_menor expressao         { $$ = no_new_operacao_meio_inteiro($1, $3, "<", SIMBOLO_TIPO_BOOLEANO); }
 | expressao t_comparacao_diferente expressao     { $$ = no_new_operacao_meio($1, $3, "!=", SIMBOLO_TIPO_BOOLEANO); }
-| expressao t_comparacao_igual expressao         { $$ = no_new_operacao_meio($1, $3, "==", SIMBOLO_TIPO_BOOLEANO); ast_imprimir($$); }
+| expressao t_comparacao_igual expressao         { $$ = no_new_operacao_meio($1, $3, "==", SIMBOLO_TIPO_BOOLEANO); }
 | expressao t_bool_or expressao                  { $$ = no_new_operacao_meio_booleano($1, $3, "or"); }
 | expressao t_bool_and expressao                 { $$ = no_new_operacao_meio_booleano($1, $3, "and"); }
 | t_bool_not expressao                           { $$ = no_new_operacao_inicio($2, "not"); }
-| t_abre_parentese expressao t_fecha_parentese   { $$ = no_new_parenteses($2); ast_imprimir($$); }
+| t_abre_parentese expressao t_fecha_parentese   { $$ = no_new_parenteses($2); }
 ;
 
 %%

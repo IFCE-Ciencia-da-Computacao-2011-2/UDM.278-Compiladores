@@ -43,7 +43,18 @@ NoAST * no_new_delimitador(char valor) {
   return no;
 }
 
-NoAST * no_new_atribuicao(Simbolo * simbolo, NoAST * no_expressao) {}
+NoAST * no_new_atribuicao(Simbolo * simbolo, NoAST * no_expressao) {
+  NoAST * no = calloc(1, sizeof(NoAST));
+  NoAtribuicaoAST * no_atribuicao = malloc(sizeof(NoAtribuicaoAST));
+  
+  no->tipo = AST_TIPO_ATRIBUICAO;
+  no->no = no_atribuicao;
+
+  no_atribuicao->simbolo = simbolo;
+  no_atribuicao->no_expressao = no_expressao;
+  
+  return no;
+}
 
 static void erro_operacao_tipo(char * posicao, NoAST * no, char * operacao, SimboloTipo tipo_operacao);
 
