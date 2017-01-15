@@ -33,8 +33,8 @@ void logica_atribuir_variavel(Simbolo * simbolo, NoAST * expressao_no) {
     char * mensagem = mensagem_preparar(
         "Variável %s‘%s’%s é do tipo %s‘%s’%s, mas está sendo atribuído um valor do tipo %s‘%s’%s\n",
         "\033[1;97m", simbolo->nome, "\033[0m",
-        "\033[1;97m", SimboloTipoDecricao[simbolo->tipo], "\033[0m",
-        "\033[1;97m", SimboloTipoDecricao[expressao_no->simbolo_tipo], "\033[0m"
+        "\033[1;97m", SimboloTipoDescricao[simbolo->tipo], "\033[0m",
+        "\033[1;97m", SimboloTipoDescricao[expressao_no->simbolo_tipo], "\033[0m"
     );
     mensagem_erro(yy_nome_arquivo, yylineno, 0, mensagem);
     free(mensagem);

@@ -65,7 +65,7 @@ extern void yyerror(char *s, ...);
 
 // Tokens da gramática: Elementos não terminais
 %type<simbolo> definicao_variavel_meio definicao_variavel_fim
-%type<no> atomo atomo_boolean expressao
+%type<no> atomo atomo_boolean expressao atribuicao
 %type<tipo> tipo
 
 %%
@@ -126,7 +126,7 @@ atribuicoes
 ;
 
 atribuicao
-: t_variavel t_atribuicao expressao       {logica_atribuir_variavel($1, $3);}
+: t_variavel t_atribuicao expressao   {logica_atribuir_variavel($1, $3); $$ = no_new_atribuicao($1, $3); }
 ;
 
 // Mais prioritário vem por último ?
@@ -134,20 +134,20 @@ expressao
 : atomo           {$$ = $1;}
 | t_variavel      {}
 // Inteiro
-| expressao t_adicao expressao
+| expressao t_adicao expressao        { $$ = no_new_operacao_meio_inteiro($1, $3, "+", SIMBOLO_TIPO_INTEIRO); }
 | expressao t_subtracao expressao
 | expressao t_multiplicacao expressao
 | expressao t_divisao expressao
 | expressao t_resto expressao
 // Booleano
-| expressao t_operacao_maior_igual expressao  { $$ = no_new_operacao_meio($1, $3, ">="); }
-| expressao t_operacao_maior expressao
-| expressao t_comparacao_menor_igual expressao
-| expressao t_comparacao_menor expressao
-| expressao t_comparacao_diferente expressao
-| expressao t_comparacao_igual expressao
-| expressao t_bool_or expressao
-| expressao t_bool_and expressao
+| expressao t_operacao_maior_igual expressao     { $$ = no_new_operacao_meio_inteiro($1, $3, ">=", SIMBOLO_TIPO_BOOLEANO); }
+| expressao t_operacao_maior expressao           { $$ = no_new_operacao_meio_inteiro($1, $3, ">", SIMBOLO_TIPO_BOOLEANO); }
+| expressao t_comparacao_menor_igual expressao   { $$ = no_new_operacao_meio_inteiro($1, $3, "<=", SIMBOLO_TIPO_BOOLEANO); }
+| expressao t_comparacao_menor expressao         { $$ = no_new_operacao_meio_inteiro($1, $3, "<", SIMBOLO_TIPO_BOOLEANO); }
+| expressao t_comparacao_diferente expressao     { $$ = no_new_operacao_meio($1, $3, "!=", SIMBOLO_TIPO_BOOLEANO); }
+| expressao t_comparacao_igual expressao         { $$ = no_new_operacao_meio($1, $3, "==", SIMBOLO_TIPO_BOOLEANO); }
+| expressao t_bool_or expressao                  { $$ = no_new_operacao_meio_booleano($1, $3, "or"); }
+| expressao t_bool_and expressao                 { $$ = no_new_operacao_meio_booleano($1, $3, "and"); }
 | t_bool_not expressao
 | t_abre_parentese expressao t_fecha_parentese
 ;

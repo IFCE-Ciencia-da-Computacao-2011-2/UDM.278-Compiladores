@@ -32,7 +32,28 @@ typedef struct {
 } NoOperacaoMeioAST;
 
 extern NoAST * no_new_constante(int valor, SimboloTipo simbolo_tipo);
-extern NoAST * no_new_operacao_meio(NoAST * no_esquerdo, NoAST * no_direito, char * operacao);
+
+extern NoAST * no_new_atribuicao(Simbolo * simbolo, NoAST * no_expressao);
+
+/**
+ * Operação do meio trabalha somente com expressões inteiras
+ *
+ * Exemplo: <, >, <=, >=, +, -, *, /, % 
+ */ 
+extern NoAST * no_new_operacao_meio_inteiro(NoAST * no_esquerdo, NoAST * no_direito, char * operacao, SimboloTipo tipo_resultado);
+
+/**
+ * Operação do meio trabalha somente com expressões booleanas
+ *
+ * Exemplo: or, and
+ */ 
+extern NoAST * no_new_operacao_meio_booleano(NoAST * no_esquerdo, NoAST * no_direito, char * operacao);
+
+/**
+ * Operação do meio genérica, não verifica tipagem dos nos envolvidos
+ */ 
+extern NoAST * no_new_operacao_meio(NoAST * no_esquerdo, NoAST * no_direito, char * operacao, SimboloTipo tipo_resultado);
+
 extern void ast_imprimir();
 
 #endif

@@ -31,20 +31,53 @@ NoAST * no_new_delimitador(char valor) {
   return no;
 }
 
-NoAST * no_new_operacao_meio(NoAST * no_esquerdo, NoAST * no_direito, char * operacao) {
+NoAST * no_new_atribuicao(Simbolo * simbolo, NoAST * no_expressao) {}
+
+static void erro_operacao_meio_tipo_errado(char * posicao, NoAST * no, char * operacao, SimboloTipo tipo_operacao);
+
+NoAST * no_new_operacao_meio_inteiro(NoAST * no_esquerdo, NoAST * no_direito, char * operacao, SimboloTipo tipo_resultado) {
+  SimboloTipo tipo = SIMBOLO_TIPO_INTEIRO;
+
+  if (no_esquerdo->simbolo_tipo != tipo)
+    erro_operacao_meio_tipo_errado("esquerda", no_esquerdo, operacao, tipo);
+  if (no_direito->simbolo_tipo != tipo)
+    erro_operacao_meio_tipo_errado("direito", no_direito, operacao, tipo);
+
+  return no_new_operacao_meio(no_esquerdo, no_direito, operacao, tipo_resultado);
+}
+
+NoAST * no_new_operacao_meio_booleano(NoAST * no_esquerdo, NoAST * no_direito, char * operacao) {
+  SimboloTipo tipo = SIMBOLO_TIPO_BOOLEANO;
+
+  if (no_esquerdo->simbolo_tipo != tipo)
+    erro_operacao_meio_tipo_errado("esquerda", no_esquerdo, operacao, tipo);
+  if (no_direito->simbolo_tipo != tipo)
+    erro_operacao_meio_tipo_errado("direito", no_direito, operacao, tipo);
+
+  return no_new_operacao_meio(no_esquerdo, no_direito, operacao, tipo);
+}
+
+static void erro_operacao_meio_tipo_errado(char * posicao, NoAST * no, char * operacao, SimboloTipo tipo_operacao) {
+  char * mensagem = mensagem_preparar(
+    "Símbolo à %s da operação %s‘%s’%s é do tipo %s‘%s’%s, mas a operação aceita somente %s‘%s’%s\n",
+    posicao,
+    "\033[1;97m", operacao, "\033[0m",
+    "\033[1;97m", SimboloTipoDescricao[no->simbolo_tipo], "\033[0m",
+    "\033[1;97m", SimboloTipoDescricao[tipo_operacao], "\033[0m"
+  );
+
+  mensagem_erro(yy_nome_arquivo, yylineno, 0, mensagem);
+  free(mensagem);
+}
+
+NoAST * no_new_operacao_meio(NoAST * no_esquerdo, NoAST * no_direito, char * operacao, SimboloTipo tipo_resultado) {
   NoAST * no = malloc(sizeof(NoAST));
   NoOperacaoMeioAST * no_operacao_meio = malloc(sizeof(NoOperacaoMeioAST));
   
-  if (no_operacao_meio->no_esquerdo->simbolo_tipo != no_operacao_meio->no_direito->simbolo_tipo) {
-    char * mensagem = mensagem_preparar("Operação envolve dois valores de tipos distintos.\n");
-    mensagem_erro(yy_nome_arquivo, yylineno, 0, mensagem);
-    free(mensagem);
-  }
-
   no->no = no_operacao_meio;
-  no->simbolo_tipo = no_operacao_meio->no_esquerdo->simbolo_tipo;
   no->tipo = AST_TIPO_OPERACAO_MEIO;
-    
+  no->simbolo_tipo = tipo_resultado;
+
   no_operacao_meio->no_esquerdo = no_esquerdo;
   no_operacao_meio->no_direito = no_direito;
   no_operacao_meio->operacao = operacao;

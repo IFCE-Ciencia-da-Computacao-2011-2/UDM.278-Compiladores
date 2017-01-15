@@ -6,7 +6,7 @@
 
 typedef enum {SIMBOLO_TIPO_INTEIRO, SIMBOLO_TIPO_BOOLEANO} SimboloTipo;
 
-extern const char * SimboloTipoDecricao[];
+extern const char * SimboloTipoDescricao[];
 
 typedef enum {FALSE, TRUE} Boolean;
 
