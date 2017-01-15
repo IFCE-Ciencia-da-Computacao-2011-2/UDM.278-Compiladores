@@ -145,11 +145,11 @@ expressao
 | expressao t_comparacao_menor_igual expressao   { $$ = no_new_operacao_meio_inteiro($1, $3, "<=", SIMBOLO_TIPO_BOOLEANO); }
 | expressao t_comparacao_menor expressao         { $$ = no_new_operacao_meio_inteiro($1, $3, "<", SIMBOLO_TIPO_BOOLEANO); }
 | expressao t_comparacao_diferente expressao     { $$ = no_new_operacao_meio($1, $3, "!=", SIMBOLO_TIPO_BOOLEANO); }
-| expressao t_comparacao_igual expressao         { $$ = no_new_operacao_meio($1, $3, "==", SIMBOLO_TIPO_BOOLEANO); }
+| expressao t_comparacao_igual expressao         { $$ = no_new_operacao_meio($1, $3, "==", SIMBOLO_TIPO_BOOLEANO); ast_imprimir($$); }
 | expressao t_bool_or expressao                  { $$ = no_new_operacao_meio_booleano($1, $3, "or"); }
 | expressao t_bool_and expressao                 { $$ = no_new_operacao_meio_booleano($1, $3, "and"); }
 | t_bool_not expressao                           { $$ = no_new_operacao_inicio($2, "not"); }
-| t_abre_parentese expressao t_fecha_parentese   { $$ = no_new_parenteses($2); }
+| t_abre_parentese expressao t_fecha_parentese   { $$ = no_new_parenteses($2); ast_imprimir($$); }
 ;
 
 %%

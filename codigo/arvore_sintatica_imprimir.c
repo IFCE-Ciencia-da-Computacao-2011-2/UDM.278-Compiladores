@@ -35,6 +35,7 @@ void ast_imprimir(NoAST * raiz) {
     printf("\n");
     printf("digraph program {\n");
     
+    raiz->pai_identificador = "RAIZ__expressao__provisorio";
     FuncaoImpressao imprimir = impressao_factory(raiz);
 
     if (imprimir != NULL)
@@ -80,19 +81,19 @@ static void ast_imprimir_tipo_operacao_meio(NoAST * no) {
     FuncaoImpressao imprimir;
     NoOperacaoMeioAST * operacao_meio = (NoOperacaoMeioAST *) no->no;
 
-    no->identificador = gerar_identificador("expressao");
+    no->identificador = no->pai_identificador;
 
     char * expressao_esquerda_identificador = gerar_identificador("expressao");
     char * expressao_direita_identificador  = gerar_identificador("expressao");
     char * operacao_identificador = gerar_identificador("operacao");
 
     // Pai
-    printf("%s [label=\"%s\"]; ", no->identificador, "expressao");
+    // Reaproveita o do pai. Por isso, não desaloca no fim
 
     // Esquerda
     printf("%s [label=\"%s\"]; ", expressao_esquerda_identificador, "expressao");
     printf("%s -> %s; \n", no->identificador, expressao_esquerda_identificador);
-    
+
     operacao_meio->no_esquerdo->pai_identificador = expressao_esquerda_identificador;
     imprimir = impressao_factory(operacao_meio->no_esquerdo);
     imprimir(operacao_meio->no_esquerdo);
@@ -108,9 +109,6 @@ static void ast_imprimir_tipo_operacao_meio(NoAST * no) {
     operacao_meio->no_direito->pai_identificador = expressao_direita_identificador;
     imprimir = impressao_factory(operacao_meio->no_direito);
     imprimir(operacao_meio->no_direito);
-
-
-    free(no->identificador);
     
     free(expressao_esquerda_identificador);
     free(expressao_direita_identificador);
