@@ -6,7 +6,7 @@
 #include "mensagem.h"
 
 NoAST * no_new_constante(int valor, SimboloTipo simbolo_tipo) {
-  NoAST * no = malloc(sizeof(NoAST));
+  NoAST * no = calloc(1, sizeof(NoAST));
   NoConstanteAST * no_constante = malloc(sizeof(NoConstanteAST));
   
   no->no = no_constante;
@@ -19,7 +19,7 @@ NoAST * no_new_constante(int valor, SimboloTipo simbolo_tipo) {
 }
 
 NoAST * no_new_referencia(Simbolo * simbolo) {
-  NoAST * no = malloc(sizeof(NoAST));
+  NoAST * no = calloc(1, sizeof(NoAST));
   NoReferenciaAST * no_referencia = malloc(sizeof(NoReferenciaAST));
 
   no->no = no_referencia;
@@ -32,7 +32,7 @@ NoAST * no_new_referencia(Simbolo * simbolo) {
 }
 
 NoAST * no_new_delimitador(char valor) {
-  NoAST * no = malloc(sizeof(NoAST));
+  NoAST * no = calloc(1, sizeof(NoAST));
   NoDelimitadorAST * no_delimitador = malloc(sizeof(NoDelimitadorAST));
   
   no->tipo = AST_TIPO_DELIMITADOR;
@@ -83,7 +83,7 @@ static void erro_operacao_tipo(char * posicao, NoAST * no, char * operacao, Simb
 }
 
 NoAST * no_new_operacao_meio(NoAST * no_esquerdo, NoAST * no_direito, char * operacao, SimboloTipo tipo_resultado) {
-  NoAST * no = malloc(sizeof(NoAST));
+  NoAST * no = calloc(1, sizeof(NoAST));
   NoOperacaoMeioAST * no_operacao_meio = malloc(sizeof(NoOperacaoMeioAST));
   
   no->no = no_operacao_meio;
@@ -103,7 +103,7 @@ NoAST * no_new_operacao_inicio(NoAST * no_direito, char * operacao) {
   if (no_direito->simbolo_tipo != tipo)
     erro_operacao_tipo("direito", no_direito, operacao, tipo);
 
-  NoAST * no = malloc(sizeof(NoAST));
+  NoAST * no = calloc(1, sizeof(NoAST));
   NoOperacaoInicioAST * no_operacao_inicio = malloc(sizeof(NoOperacaoInicioAST));
   
   no->no = no_operacao_inicio;
@@ -117,7 +117,7 @@ NoAST * no_new_operacao_inicio(NoAST * no_direito, char * operacao) {
 }
 
 NoAST * no_new_parenteses(NoAST * no_expressao) {
-  NoAST * no = malloc(sizeof(NoAST));
+  NoAST * no = calloc(1, sizeof(NoAST));
   NoParentesesAST * no_parenteses = malloc(sizeof(NoParentesesAST));
   
   no->no = no_parenteses;

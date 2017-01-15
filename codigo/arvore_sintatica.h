@@ -18,6 +18,9 @@ typedef struct {
 
   NoTipoAST tipo;
   SimboloTipo simbolo_tipo;
+
+  char * identificador;
+  char * pai_identificador;
 } NoAST;
 
 typedef struct {

@@ -126,12 +126,12 @@ atribuicoes
 ;
 
 atribuicao
-: t_variavel t_atribuicao expressao   {logica_atribuir_variavel($1, $3); $$ = no_new_atribuicao($1, $3); ast_imprimir($$); }
+: t_variavel t_atribuicao expressao   {logica_atribuir_variavel($1, $3); $$ = no_new_atribuicao($1, $3); /* ast_imprimir($$); */ }
 ;
 
 // Mais prioritário vem por último ?
 expressao
-: atomo           {$$ = $1;}
+: atomo           {$$ = $1; }
 | t_variavel      {$$ = no_new_referencia($1);}
 // Inteiro
 | expressao t_adicao expressao        { $$ = no_new_operacao_meio_inteiro($1, $3, "+", SIMBOLO_TIPO_INTEIRO); }
@@ -140,7 +140,7 @@ expressao
 | expressao t_divisao expressao
 | expressao t_resto expressao
 // Booleano
-| expressao t_operacao_maior_igual expressao     { $$ = no_new_operacao_meio_inteiro($1, $3, ">=", SIMBOLO_TIPO_BOOLEANO); }
+| expressao t_operacao_maior_igual expressao     { $$ = no_new_operacao_meio_inteiro($1, $3, ">=", SIMBOLO_TIPO_BOOLEANO); ast_imprimir($$); }
 | expressao t_operacao_maior expressao           { $$ = no_new_operacao_meio_inteiro($1, $3, ">", SIMBOLO_TIPO_BOOLEANO); }
 | expressao t_comparacao_menor_igual expressao   { $$ = no_new_operacao_meio_inteiro($1, $3, "<=", SIMBOLO_TIPO_BOOLEANO); }
 | expressao t_comparacao_menor expressao         { $$ = no_new_operacao_meio_inteiro($1, $3, "<", SIMBOLO_TIPO_BOOLEANO); }
