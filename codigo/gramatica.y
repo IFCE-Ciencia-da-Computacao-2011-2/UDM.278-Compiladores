@@ -76,7 +76,7 @@ codigo:
 | fim_codigo
 ;
 
-fim_codigo: t_eof { ast_imprimir(); exit(0); }
+fim_codigo: t_eof { /*ast_imprimir($$);*/ exit(0); }
 
 // Definições
 definicao_variaveis
@@ -126,13 +126,13 @@ atribuicoes
 ;
 
 atribuicao
-: t_variavel t_atribuicao expressao   {logica_atribuir_variavel($1, $3); $$ = no_new_atribuicao($1, $3); }
+: t_variavel t_atribuicao expressao   {logica_atribuir_variavel($1, $3); $$ = no_new_atribuicao($1, $3); ast_imprimir($$); }
 ;
 
 // Mais prioritário vem por último ?
 expressao
 : atomo           {$$ = $1;}
-| t_variavel      {}
+| t_variavel      {$$ = no_new_referencia($1);}
 // Inteiro
 | expressao t_adicao expressao        { $$ = no_new_operacao_meio_inteiro($1, $3, "+", SIMBOLO_TIPO_INTEIRO); }
 | expressao t_subtracao expressao
@@ -148,8 +148,8 @@ expressao
 | expressao t_comparacao_igual expressao         { $$ = no_new_operacao_meio($1, $3, "==", SIMBOLO_TIPO_BOOLEANO); }
 | expressao t_bool_or expressao                  { $$ = no_new_operacao_meio_booleano($1, $3, "or"); }
 | expressao t_bool_and expressao                 { $$ = no_new_operacao_meio_booleano($1, $3, "and"); }
-| t_bool_not expressao
-| t_abre_parentese expressao t_fecha_parentese
+| t_bool_not expressao                           { $$ = no_new_operacao_inicio($2, "not"); }
+| t_abre_parentese expressao t_fecha_parentese   { $$ = no_new_parenteses($2); }
 ;
 
 %%

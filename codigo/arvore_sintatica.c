@@ -10,12 +10,24 @@ NoAST * no_new_constante(int valor, SimboloTipo simbolo_tipo) {
   NoConstanteAST * no_constante = malloc(sizeof(NoConstanteAST));
   
   no->no = no_constante;
-    
   no->tipo = AST_TIPO_CONSTANTE;
   no->simbolo_tipo = simbolo_tipo;
   
   no_constante->valor = valor;
   
+  return no;
+}
+
+NoAST * no_new_referencia(Simbolo * simbolo) {
+  NoAST * no = malloc(sizeof(NoAST));
+  NoReferenciaAST * no_referencia = malloc(sizeof(NoReferenciaAST));
+
+  no->no = no_referencia;
+  no->tipo = AST_TIPO_REFERENCIA;
+  no->simbolo_tipo = simbolo->tipo;
+
+  no_referencia->simbolo = simbolo;
+
   return no;
 }
 
@@ -33,15 +45,15 @@ NoAST * no_new_delimitador(char valor) {
 
 NoAST * no_new_atribuicao(Simbolo * simbolo, NoAST * no_expressao) {}
 
-static void erro_operacao_meio_tipo_errado(char * posicao, NoAST * no, char * operacao, SimboloTipo tipo_operacao);
+static void erro_operacao_tipo(char * posicao, NoAST * no, char * operacao, SimboloTipo tipo_operacao);
 
 NoAST * no_new_operacao_meio_inteiro(NoAST * no_esquerdo, NoAST * no_direito, char * operacao, SimboloTipo tipo_resultado) {
   SimboloTipo tipo = SIMBOLO_TIPO_INTEIRO;
 
   if (no_esquerdo->simbolo_tipo != tipo)
-    erro_operacao_meio_tipo_errado("esquerda", no_esquerdo, operacao, tipo);
+    erro_operacao_tipo("esquerda", no_esquerdo, operacao, tipo);
   if (no_direito->simbolo_tipo != tipo)
-    erro_operacao_meio_tipo_errado("direito", no_direito, operacao, tipo);
+    erro_operacao_tipo("direito", no_direito, operacao, tipo);
 
   return no_new_operacao_meio(no_esquerdo, no_direito, operacao, tipo_resultado);
 }
@@ -50,14 +62,14 @@ NoAST * no_new_operacao_meio_booleano(NoAST * no_esquerdo, NoAST * no_direito, c
   SimboloTipo tipo = SIMBOLO_TIPO_BOOLEANO;
 
   if (no_esquerdo->simbolo_tipo != tipo)
-    erro_operacao_meio_tipo_errado("esquerda", no_esquerdo, operacao, tipo);
+    erro_operacao_tipo("esquerda", no_esquerdo, operacao, tipo);
   if (no_direito->simbolo_tipo != tipo)
-    erro_operacao_meio_tipo_errado("direito", no_direito, operacao, tipo);
+    erro_operacao_tipo("direito", no_direito, operacao, tipo);
 
   return no_new_operacao_meio(no_esquerdo, no_direito, operacao, tipo);
 }
 
-static void erro_operacao_meio_tipo_errado(char * posicao, NoAST * no, char * operacao, SimboloTipo tipo_operacao) {
+static void erro_operacao_tipo(char * posicao, NoAST * no, char * operacao, SimboloTipo tipo_operacao) {
   char * mensagem = mensagem_preparar(
     "Símbolo à %s da operação %s‘%s’%s é do tipo %s‘%s’%s, mas a operação aceita somente %s‘%s’%s\n",
     posicao,
@@ -81,18 +93,38 @@ NoAST * no_new_operacao_meio(NoAST * no_esquerdo, NoAST * no_direito, char * ope
   no_operacao_meio->no_esquerdo = no_esquerdo;
   no_operacao_meio->no_direito = no_direito;
   no_operacao_meio->operacao = operacao;
-  
-  no_operacao_meio->valor = 0; // FIXME
 
   return no;
 }
 
+NoAST * no_new_operacao_inicio(NoAST * no_direito, char * operacao) {
+  SimboloTipo tipo = SIMBOLO_TIPO_BOOLEANO;
 
-void ast_imprimir() {
-    printf("Insira o código a seguir em http://www.webgraphviz.com/\n");
-    
-    // a [label="node"]; b [label="node"]; a->b
-    printf("\n");
-    printf("digraph program {\n");
-    printf("}\n");
+  if (no_direito->simbolo_tipo != tipo)
+    erro_operacao_tipo("direito", no_direito, operacao, tipo);
+
+  NoAST * no = malloc(sizeof(NoAST));
+  NoOperacaoInicioAST * no_operacao_inicio = malloc(sizeof(NoOperacaoInicioAST));
+  
+  no->no = no_operacao_inicio;
+  no->tipo = AST_TIPO_OPERACAO_INICIO;
+  no->simbolo_tipo = tipo;
+
+  no_operacao_inicio->operacao = operacao;
+  no_operacao_inicio->no = no_direito;
+
+  return no;
+}
+
+NoAST * no_new_parenteses(NoAST * no_expressao) {
+  NoAST * no = malloc(sizeof(NoAST));
+  NoParentesesAST * no_parenteses = malloc(sizeof(NoParentesesAST));
+  
+  no->no = no_parenteses;
+  no->tipo = AST_TIPO_PARENTESES;
+  no->simbolo_tipo = no_expressao->simbolo_tipo;
+
+  no_parenteses->no = no_expressao;
+
+  return no;
 }

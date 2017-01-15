@@ -47,19 +47,9 @@ void logica_atribuir_variavel(Simbolo * simbolo, NoAST * expressao_no) {
     simbolo->valor.boolean = logica_resolver_expressao(expressao_no);
 }
 
+// Aqui que deve implementar o resolvedor de expressões
 static int logica_resolver_expressao(NoAST * expressao_no) {
-  if (expressao_no->tipo == AST_TIPO_CONSTANTE)
-    return ((NoConstanteAST *) expressao_no->no)->valor;
-
-  else if (expressao_no->tipo == AST_TIPO_DELIMITADOR) {
-    char * mensagem = mensagem_preparar("Tentando pegar um valor de um delimitador. Caso não esperado\n");
-    mensagem_erro(yy_nome_arquivo, yylineno, 0, mensagem);
-    free(mensagem);
-    exit(1);
-  }
-
-  else if (expressao_no->tipo == AST_TIPO_OPERACAO_MEIO)
-    return ((NoOperacaoMeioAST *) expressao_no->no)->valor;
+  return 0;
 }
 
 /////////////////////////////////

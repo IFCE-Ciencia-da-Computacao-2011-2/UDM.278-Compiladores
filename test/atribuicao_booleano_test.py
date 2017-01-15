@@ -19,6 +19,13 @@ class AtribuicaoBooleanoTest(Test):
             b = a;
             """
         )
+    def test_atribuicao_id_errado(self):
+        erro = 'interpretador:1:0 erro: Variável ‘a’ é do tipo ‘bool’, mas está sendo atribuído um valor do tipo ‘int’'
+        self.assert_raises_error('bool a; int b; a = b;', erro)
+
+    def test_atribuicao_valor_inteiro_em_variavel_booleana(self):
+        erro = 'interpretador:1:0 erro: Variável ‘a’ é do tipo ‘bool’, mas está sendo atribuído um valor do tipo ‘int’'
+        self.assert_raises_error('bool a; a = 3;', erro)
 
     def test_operacao_comparacao(self):
         mensagem = """
@@ -44,10 +51,7 @@ class AtribuicaoBooleanoTest(Test):
 
         self.assert_not_raises_error(mensagem)
 
-    def test_atribuicao_valor_inteiro_em_variavel_booleana(self):
-        erro = 'macarronada'
-        self.assert_raises_error('bool a; a = 3;', erro)
-
+    '''
     def test_operacao_ilegal_meio_booleano(self):
         mensagem = """
         int inteiro;
@@ -56,7 +60,7 @@ class AtribuicaoBooleanoTest(Test):
 
         resultado = {} {} {};
         """
-        erro = 'macarronada'
+        erro = 'erro: Variável ‘resultado’ é do tipo ‘int’, mas está sendo atribuído um valor do tipo ‘bool’'
         operacoes_ilegais = ['<', '<=', '>', '>=', '==', '!=', '%']
 
         for operacao in operacoes_ilegais:
@@ -64,3 +68,4 @@ class AtribuicaoBooleanoTest(Test):
 
         for operacao in operacoes_ilegais:
             self.assert_raises_error(mensagem.format('booleano', operacao, 'inteiro'), erro)
+    '''
