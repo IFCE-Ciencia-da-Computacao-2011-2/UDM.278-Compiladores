@@ -29,6 +29,7 @@ python3 test.py
  * **Flex & Bison:** http://shop.oreilly.com/product/9780596155988.do
  * **Flex examples:** https://github.com/westes/flex/tree/master/examples/manual
  * **?**: http://www.admb-project.org/tools/flex/compiler.pdf
+ * **AST in C**: https://efxa.org/2014/05/25/how-to-create-an-abstract-syntax-tree-while-parsing-an-input-stream/
 
 ## Grammar
 
