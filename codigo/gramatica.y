@@ -138,7 +138,7 @@ expressao
 | expressao t_subtracao expressao       { $$ = no_new_operacao_meio_inteiro($1, $3, "-", SIMBOLO_TIPO_INTEIRO); }
 | expressao t_multiplicacao expressao   { $$ = no_new_operacao_meio_inteiro($1, $3, "*", SIMBOLO_TIPO_INTEIRO); }
 | expressao t_divisao expressao         { $$ = no_new_operacao_meio_inteiro($1, $3, "/", SIMBOLO_TIPO_INTEIRO); }
-| expressao t_resto expressao           { $$ = no_new_operacao_meio_inteiro($1, $3, "", SIMBOLO_TIPO_INTEIRO); }
+| expressao t_resto expressao           { $$ = no_new_operacao_meio_inteiro($1, $3, "%", SIMBOLO_TIPO_INTEIRO); }
 // Booleano
 | expressao t_operacao_maior_igual expressao     { $$ = no_new_operacao_meio_inteiro($1, $3, ">=", SIMBOLO_TIPO_BOOLEANO); }
 | expressao t_operacao_maior expressao           { $$ = no_new_operacao_meio_inteiro($1, $3, ">", SIMBOLO_TIPO_BOOLEANO); }
