@@ -60,56 +60,6 @@ static FuncaoImpressao impressao_factory(NoAST * no) {
     return NULL;
 }
 
-static void ast_imprimir_tipo_inicio(NoAST * no) {
-    NoOperacaoInicioAST * inicio = (NoOperacaoInicioAST *) no->no;
-    
-    // Not
-    char * not_identificador = gerar_identificador("not");
-    printf("%s [label=\"%s\"]; \n", not_identificador, inicio->operacao);
-    printf("%s -> %s; \n", no->pai_identificador, not_identificador);
-
-    // Expressão
-    char * expressao_identificador = gerar_identificador("expressao");
-    printf("%s [label=\"%s\"]; \n", expressao_identificador, "expressao");
-    printf("%s -> %s; \n", no->pai_identificador, expressao_identificador);
-    
-    inicio->no->pai_identificador = expressao_identificador;
-    FuncaoImpressao imprimir = impressao_factory(inicio->no);
-    imprimir(inicio->no);
-    
-    free(not_identificador);
-    free(expressao_identificador);
-}
-
-
-static void ast_imprimir_tipo_parentese(NoAST * no) {
-    NoParentesesAST * parenteses = (NoParentesesAST *) no->no;
-    
-    // Abre parênteses
-    char * abre_parentese_identificador = gerar_identificador("abre_parentese");
-    printf("%s [label=\"%s\"]; \n", abre_parentese_identificador, "(");
-    printf("%s -> %s; \n", no->pai_identificador, abre_parentese_identificador);
-    
-    // Expressão
-    char * expressao_identificador = gerar_identificador("expressao");
-    printf("%s [label=\"%s\"]; \n", expressao_identificador, "expressao");
-    printf("%s -> %s; \n", no->pai_identificador, expressao_identificador);
-    
-    parenteses->no->pai_identificador = expressao_identificador;
-    FuncaoImpressao imprimir = impressao_factory(parenteses->no);
-    imprimir(parenteses->no);
-    
-    // Fecha parênteses
-    char * fecha_parentese_identificador = gerar_identificador("fecha_parentese");
-    printf("%s [label=\"%s\"]; \n", fecha_parentese_identificador, ")");
-    printf("%s -> %s; \n", no->pai_identificador, fecha_parentese_identificador);
-
-    
-    free(abre_parentese_identificador);
-    free(expressao_identificador);
-    free(fecha_parentese_identificador);
-}
-
 static void ast_imprimir_tipo_constante(NoAST * no) {
     NoConstanteAST * constante = (NoConstanteAST *) no->no;
 
@@ -214,4 +164,53 @@ static void ast_imprimir_tipo_atribuicao(NoAST * no) {
     free(atribuicao_identificador);
     free(expressao_identificador);
     free(ponto_virgula_identificador);
+}
+
+static void ast_imprimir_tipo_parentese(NoAST * no) {
+    NoParentesesAST * parenteses = (NoParentesesAST *) no->no;
+    
+    // Abre parênteses
+    char * abre_parentese_identificador = gerar_identificador("abre_parentese");
+    printf("%s [label=\"%s\"]; \n", abre_parentese_identificador, "(");
+    printf("%s -> %s; \n", no->pai_identificador, abre_parentese_identificador);
+    
+    // Expressão
+    char * expressao_identificador = gerar_identificador("expressao");
+    printf("%s [label=\"%s\"]; \n", expressao_identificador, "expressao");
+    printf("%s -> %s; \n", no->pai_identificador, expressao_identificador);
+    
+    parenteses->no->pai_identificador = expressao_identificador;
+    FuncaoImpressao imprimir = impressao_factory(parenteses->no);
+    imprimir(parenteses->no);
+    
+    // Fecha parênteses
+    char * fecha_parentese_identificador = gerar_identificador("fecha_parentese");
+    printf("%s [label=\"%s\"]; \n", fecha_parentese_identificador, ")");
+    printf("%s -> %s; \n", no->pai_identificador, fecha_parentese_identificador);
+
+    
+    free(abre_parentese_identificador);
+    free(expressao_identificador);
+    free(fecha_parentese_identificador);
+}
+
+static void ast_imprimir_tipo_inicio(NoAST * no) {
+    NoOperacaoInicioAST * inicio = (NoOperacaoInicioAST *) no->no;
+    
+    // Not
+    char * not_identificador = gerar_identificador("not");
+    printf("%s [label=\"%s\"]; \n", not_identificador, inicio->operacao);
+    printf("%s -> %s; \n", no->pai_identificador, not_identificador);
+
+    // Expressão
+    char * expressao_identificador = gerar_identificador("expressao");
+    printf("%s [label=\"%s\"]; \n", expressao_identificador, "expressao");
+    printf("%s -> %s; \n", no->pai_identificador, expressao_identificador);
+    
+    inicio->no->pai_identificador = expressao_identificador;
+    FuncaoImpressao imprimir = impressao_factory(inicio->no);
+    imprimir(inicio->no);
+    
+    free(not_identificador);
+    free(expressao_identificador);
 }
