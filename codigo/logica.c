@@ -17,13 +17,21 @@ void logica_declarar_variavel(Simbolo * simbolo) {
   free(mensagem);
 }
 
-void logica_declarar_variavel_mesmo_tipo(Simbolo * a_ser_declarado, Simbolo * ja_declarado) {
-  logica_declarar_variavel(a_ser_declarado);
-  logica_definir_tipo(a_ser_declarado, ja_declarado->tipo);
-}
-
 void logica_definir_tipo(Simbolo * simbolo, SimboloTipo tipo) {
   simbolo->tipo = tipo;
+}
+
+void logica_definir_tipo_lista_simbolos(NoAST * no, SimboloTipo tipo) {
+  NoElementoListaEncadeadaAST * ponteiro = (NoElementoListaEncadeadaAST *) no;
+  
+  while (ponteiro != NULL) {
+    NoReferenciaAST * referencia = (NoReferenciaAST *) ponteiro->no;
+    Simbolo * simbolo = referencia->simbolo;
+    
+    logica_definir_tipo(simbolo, tipo);
+    
+    ponteiro = (NoElementoListaEncadeadaAST *) ponteiro->proximo_no->no;
+  }
 }
 
 void logica_atribuir_variavel(Simbolo * simbolo, NoAST * expressao_no) {

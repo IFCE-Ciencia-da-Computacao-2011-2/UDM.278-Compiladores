@@ -64,7 +64,7 @@ extern void yyerror(char *s, ...);
 %left t_multiplicacao t_divisao t_resto  // Verificar prioridade
 
 // Tokens da gramática: Elementos não terminais
-%type<simbolo> definicao_variaveis_meio definicao_variavel_meio definicao_variavel_fim
+%type<no> definicao_variaveis_meio definicao_variavel_meio definicao_variavel_fim
 %type<no> atomo atomo_boolean expressao atribuicao
 %type<tipo> tipo
 
@@ -80,25 +80,25 @@ fim_codigo: t_eof { /*ast_imprimir($$);*/ exit(0); }
 
 // Definições
 definicao_variaveis
-: tipo definicao_variaveis_meio  // A definição de tipos ocorre dentro de definicao_variaveis_meio
-| tipo definicao_variavel_fim    { logica_definir_tipo($2, $1); }
+: tipo definicao_variaveis_meio  { logica_definir_tipo_lista_simbolos($2, $1); }
+| tipo definicao_variavel_fim    { logica_definir_tipo_lista_simbolos($2, $1); }
 ;
 
 definicao_variaveis_meio
-: definicao_variavel_meio definicao_variaveis_meio { logica_declarar_variavel_mesmo_tipo($1, $2); $$ = $1; }
-| definicao_variavel_meio definicao_variavel_fim { logica_declarar_variavel_mesmo_tipo($1, $2); $$ = $1; }
+: definicao_variavel_meio definicao_variaveis_meio { $$ = no_new_elemento_lista_encadeada($1, $2); }
+| definicao_variavel_meio definicao_variavel_fim   { $$ = no_new_elemento_lista_encadeada($1, $2); }
 ;
 
 definicao_variavel_meio
-: t_variavel t_virgula        { logica_declarar_variavel($1); $$ = $1;}
+: t_variavel t_virgula        { $$ = no_new_referencia($1); }
 | palavra_reservada t_virgula { erro_atribuicao_palavras_reservadas(); }
 | atomo t_virgula             { erro_atribuicao_palavras_reservadas(); }
 ;
 
 definicao_variavel_fim
-: t_variavel t_ponto_virgula { logica_declarar_variavel($1); $$ = $1; }
+: t_variavel t_ponto_virgula        { $$ = no_new_referencia($1); }
 | palavra_reservada t_ponto_virgula { erro_atribuicao_palavras_reservadas(); }
-| atomo t_ponto_virgula { erro_atribuicao_palavras_reservadas(); }
+| atomo t_ponto_virgula             { erro_atribuicao_palavras_reservadas(); }
 ;
 
 palavra_reservada: tipo

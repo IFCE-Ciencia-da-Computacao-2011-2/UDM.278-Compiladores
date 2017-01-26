@@ -11,7 +11,8 @@ typedef enum {
     AST_TIPO_ATRIBUICAO,
     AST_TIPO_DELIMITADOR,
     AST_TIPO_OPERACAO_MEIO, AST_TIPO_OPERACAO_INICIO,
-    AST_TIPO_PARENTESES
+    AST_TIPO_PARENTESES,
+    AST_TIPO_ELEMENTO_LISTA_ENCADEADA
 } NoTipoAST;
 
 typedef struct {
@@ -45,19 +46,21 @@ typedef struct {
   NoAST * no_esquerdo;
   char * operacao;
   NoAST * no_direito;
-
 } NoOperacaoMeioAST;
 
 typedef struct {
   char * operacao;
   NoAST * no;
-
 } NoOperacaoInicioAST;
 
 typedef struct {
   NoAST * no;
-
 } NoParentesesAST;
+
+typedef struct {
+  NoAST * no;
+  NoAST * proximo_no;
+} NoElementoListaEncadeadaAST;
 
 extern NoAST * no_new_constante(int valor, SimboloTipo simbolo_tipo);
 
@@ -100,6 +103,9 @@ extern NoAST * no_new_operacao_inicio(NoAST * no_direito, char * operacao);
  * Exemplo: ( 2 + 4 )
  */
 extern NoAST * no_new_parenteses(NoAST * no_expressao);
+
+
+extern NoAST * no_new_elemento_lista_encadeada(NoAST * no, NoAST * proximo_no);
 
 extern void ast_imprimir(NoAST * raiz);
 
