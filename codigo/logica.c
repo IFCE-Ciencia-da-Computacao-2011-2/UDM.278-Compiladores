@@ -17,6 +17,11 @@ void logica_declarar_variavel(Simbolo * simbolo) {
   free(mensagem);
 }
 
+void logica_declarar_variavel_mesmo_tipo(Simbolo * a_ser_declarado, Simbolo * ja_declarado) {
+  logica_declarar_variavel(a_ser_declarado);
+  logica_definir_tipo(a_ser_declarado, ja_declarado->tipo);
+}
+
 void logica_definir_tipo(Simbolo * simbolo, SimboloTipo tipo) {
   simbolo->tipo = tipo;
 }

@@ -64,7 +64,7 @@ extern void yyerror(char *s, ...);
 %left t_multiplicacao t_divisao t_resto  // Verificar prioridade
 
 // Tokens da gramática: Elementos não terminais
-%type<simbolo> definicao_variavel_meio definicao_variavel_fim
+%type<simbolo> definicao_variaveis_meio definicao_variavel_meio definicao_variavel_fim
 %type<no> atomo atomo_boolean expressao atribuicao
 %type<tipo> tipo
 
@@ -80,13 +80,13 @@ fim_codigo: t_eof { /*ast_imprimir($$);*/ exit(0); }
 
 // Definições
 definicao_variaveis
-: tipo definicao_variaveis_meio
+: tipo definicao_variaveis_meio  // A definição de tipos ocorre dentro de definicao_variaveis_meio
 | tipo definicao_variavel_fim    { logica_definir_tipo($2, $1); }
 ;
 
 definicao_variaveis_meio
-: definicao_variavel_meio definicao_variaveis_meio
-| definicao_variavel_meio definicao_variavel_fim
+: definicao_variavel_meio definicao_variaveis_meio { logica_declarar_variavel_mesmo_tipo($1, $2); $$ = $1; }
+| definicao_variavel_meio definicao_variavel_fim { logica_declarar_variavel_mesmo_tipo($1, $2); $$ = $1; }
 ;
 
 definicao_variavel_meio
@@ -126,7 +126,7 @@ atribuicoes
 ;
 
 atribuicao
-: t_variavel t_atribuicao expressao t_ponto_virgula  {logica_atribuir_variavel($1, $3); $$ = no_new_atribuicao($1, $3); ast_imprimir($$); }
+: t_variavel t_atribuicao expressao t_ponto_virgula  {logica_atribuir_variavel($1, $3); $$ = no_new_atribuicao($1, $3); /*ast_imprimir($$);*/ }
 ;
 
 // Mais prioritário vem por último ?
