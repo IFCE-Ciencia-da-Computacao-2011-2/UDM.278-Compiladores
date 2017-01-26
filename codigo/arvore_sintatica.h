@@ -58,7 +58,7 @@ typedef struct {
 } NoParentesesAST;
 
 typedef struct {
-  NoAST * no;
+  Simbolo * simbolo;
   NoAST * proximo_no;
 } NoElementoListaEncadeadaAST;
 
@@ -105,7 +105,15 @@ extern NoAST * no_new_operacao_inicio(NoAST * no_direito, char * operacao);
 extern NoAST * no_new_parenteses(NoAST * no_expressao);
 
 
-extern NoAST * no_new_elemento_lista_encadeada(NoAST * no, NoAST * proximo_no);
+/**
+ * Cria um nó de lista encadeada a partir de símbolo
+ */
+extern NoAST * no_new_elemento_lista_encadeada(Simbolo * simbolo);
+
+/**
+ * Vincula o no com o proximo_no
+ */
+extern void no_vincula_elementos_lista_encadeada(NoAST * no, NoAST * proximo_no);
 
 extern void ast_imprimir(NoAST * raiz);
 

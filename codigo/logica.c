@@ -5,33 +5,33 @@
 
 static int logica_resolver_expressao(NoAST * expressao_no);
 
-void logica_declarar_variavel(Simbolo * simbolo) {
+void logica_declarar_lista_variaveis(NoAST * no, SimboloTipo tipo) {
+  NoAST * proximo_no = no;
+  NoElementoListaEncadeadaAST * ponteiro = NULL;
+  
+  while (proximo_no != NULL) {
+    ponteiro = (NoElementoListaEncadeadaAST *) proximo_no->no;
+
+    Simbolo * simbolo = (Simbolo *) ponteiro->simbolo;
+    
+    logica_declarar_variavel(simbolo, tipo);
+
+    proximo_no = ponteiro->proximo_no;
+  }
+}
+
+void logica_declarar_variavel(Simbolo * simbolo, SimboloTipo tipo) {
   if (!simbolo->atribuido) {
     simbolo->atribuido = TRUE;
     simbolo->valor.integer = 0;
+
+    simbolo->tipo = tipo;
     return;
   }
 
   char * mensagem = mensagem_preparar("Variável %s‘%s’%s já foi declarado previamente\n", "\033[1;97m", simbolo->nome, "\033[0m");
   mensagem_erro(yy_nome_arquivo, yylineno, 0, mensagem);
   free(mensagem);
-}
-
-void logica_definir_tipo(Simbolo * simbolo, SimboloTipo tipo) {
-  simbolo->tipo = tipo;
-}
-
-void logica_definir_tipo_lista_simbolos(NoAST * no, SimboloTipo tipo) {
-  NoElementoListaEncadeadaAST * ponteiro = (NoElementoListaEncadeadaAST *) no;
-  
-  while (ponteiro != NULL) {
-    NoReferenciaAST * referencia = (NoReferenciaAST *) ponteiro->no;
-    Simbolo * simbolo = referencia->simbolo;
-    
-    logica_definir_tipo(simbolo, tipo);
-    
-    ponteiro = (NoElementoListaEncadeadaAST *) ponteiro->proximo_no->no;
-  }
 }
 
 void logica_atribuir_variavel(Simbolo * simbolo, NoAST * expressao_no) {

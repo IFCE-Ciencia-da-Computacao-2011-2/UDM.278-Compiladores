@@ -28,7 +28,7 @@ extern void yyerror(char *s, ...);
  // Identificador de variável na tabela de símbolos
  Simbolo * simbolo;
  
- // Definir tipo de uma variável
+ // declarar tipo de uma variável
  SimboloTipo tipo;
 
  // Valor de expressão
@@ -64,13 +64,13 @@ extern void yyerror(char *s, ...);
 %left t_multiplicacao t_divisao t_resto  // Verificar prioridade
 
 // Tokens da gramática: Elementos não terminais
-%type<no> definicao_variaveis_meio definicao_variavel_meio definicao_variavel_fim
+%type<no> declaracao_variaveis_meio declaracao_variavel_meio declaracao_variavel_fim
 %type<no> atomo atomo_boolean expressao atribuicao
 %type<tipo> tipo
 
 %%
 codigo:
-| definicao_variaveis codigo
+| declaracao_variaveis codigo
 | erros codigo
 | atribuicoes fim_codigo
 | fim_codigo
@@ -78,25 +78,25 @@ codigo:
 
 fim_codigo: t_eof { /*ast_imprimir($$);*/ exit(0); }
 
-// Definições
-definicao_variaveis
-: tipo definicao_variaveis_meio  { logica_definir_tipo_lista_simbolos($2, $1); }
-| tipo definicao_variavel_fim    { logica_definir_tipo_lista_simbolos($2, $1); }
+// Declarações
+declaracao_variaveis
+: tipo declaracao_variaveis_meio  { logica_declarar_lista_variaveis($2, $1); }
+| tipo declaracao_variavel_fim    { logica_declarar_lista_variaveis($2, $1); }
 ;
 
-definicao_variaveis_meio
-: definicao_variavel_meio definicao_variaveis_meio { $$ = no_new_elemento_lista_encadeada($1, $2); }
-| definicao_variavel_meio definicao_variavel_fim   { $$ = no_new_elemento_lista_encadeada($1, $2); }
+declaracao_variaveis_meio
+: declaracao_variavel_meio declaracao_variaveis_meio { no_vincula_elementos_lista_encadeada($1, $2); $$ = $1; }
+| declaracao_variavel_meio declaracao_variavel_fim   { no_vincula_elementos_lista_encadeada($1, $2); $$ = $1; }
 ;
 
-definicao_variavel_meio
-: t_variavel t_virgula        { $$ = no_new_referencia($1); }
+declaracao_variavel_meio
+: t_variavel t_virgula        { $$ = no_new_elemento_lista_encadeada($1); }
 | palavra_reservada t_virgula { erro_atribuicao_palavras_reservadas(); }
 | atomo t_virgula             { erro_atribuicao_palavras_reservadas(); }
 ;
 
-definicao_variavel_fim
-: t_variavel t_ponto_virgula        { $$ = no_new_referencia($1); }
+declaracao_variavel_fim
+: t_variavel t_ponto_virgula        { $$ = no_new_elemento_lista_encadeada($1); }
 | palavra_reservada t_ponto_virgula { erro_atribuicao_palavras_reservadas(); }
 | atomo t_ponto_virgula             { erro_atribuicao_palavras_reservadas(); }
 ;

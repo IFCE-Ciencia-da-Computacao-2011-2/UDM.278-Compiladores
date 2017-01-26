@@ -139,3 +139,22 @@ NoAST * no_new_parenteses(NoAST * no_expressao) {
 
   return no;
 }
+
+
+NoAST * no_new_elemento_lista_encadeada(Simbolo * simbolo) {
+  NoAST * no = calloc(1, sizeof(NoAST));
+  NoElementoListaEncadeadaAST * no_elemento = malloc(sizeof(NoElementoListaEncadeadaAST));
+  
+  no->no = no_elemento;
+  no->tipo = AST_TIPO_ELEMENTO_LISTA_ENCADEADA;
+
+  no_elemento->simbolo = simbolo;
+  no_elemento->proximo_no = NULL;
+  
+  return no;
+}
+
+void no_vincula_elementos_lista_encadeada(NoAST * no, NoAST * proximo_no) {
+   NoElementoListaEncadeadaAST * no_elemento = (NoElementoListaEncadeadaAST *) no->no;
+   no_elemento->proximo_no = proximo_no;
+}
