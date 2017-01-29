@@ -126,13 +126,13 @@ atribuicoes
 ;
 
 atribuicao
-: t_variavel t_atribuicao expressao t_ponto_virgula  {logica_atribuir_variavel($1, $3); $$ = no_new_atribuicao($1, $3); /*ast_imprimir($$);*/ }
+: t_variavel t_atribuicao expressao t_ponto_virgula  {logica_atribuir_variavel($1, $3); $$ = no_new_atribuicao($1, $3); ast_imprimir($$); }
 ;
 
 // Mais prioritário vem por último ?
 expressao
 : atomo           { $$ = $1; }
-| t_variavel      { $$ = no_new_referencia($1); }
+| t_variavel      { $$ = no_new_referencia($1); logica_verificar_variavel_declarada_anteriormente($1); }
 // Inteiro
 | expressao t_adicao expressao          { $$ = no_new_operacao_meio_inteiro($1, $3, "+", SIMBOLO_TIPO_INTEIRO); }
 | expressao t_subtracao expressao       { $$ = no_new_operacao_meio_inteiro($1, $3, "-", SIMBOLO_TIPO_INTEIRO); }
@@ -156,7 +156,7 @@ expressao
 
 int main() {
   printf("Vando 0.0.1 (64-bit)\n");
-  printf("[GCC ?.?.?] on linux\n");
+  printf("[GCC %d.%d.%d] on linux\n", __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
 
   return yyparse();
 }

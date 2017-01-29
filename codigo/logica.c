@@ -5,6 +5,15 @@
 
 static int logica_resolver_expressao(NoAST * expressao_no);
 
+void logica_verificar_variavel_declarada_anteriormente(Simbolo * simbolo) {
+  if (simbolo->atribuido)
+    return;
+  
+  char * mensagem = mensagem_preparar("Variável %s‘%s’%s não foi declarada previamente\n", "\033[1;97m", simbolo->nome, "\033[0m");
+  mensagem_erro(yy_nome_arquivo, yylineno, 0, mensagem);
+  free(mensagem);
+}
+
 void logica_declarar_lista_variaveis(NoAST * no, SimboloTipo tipo) {
   NoAST * proximo_no = no;
   NoElementoListaEncadeadaAST * ponteiro = NULL;

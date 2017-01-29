@@ -15,6 +15,7 @@ static void ast_imprimir_tipo_operacao_meio(NoAST * no);
 static void ast_imprimir_tipo_atribuicao(NoAST * no);
 static void ast_imprimir_tipo_parentese(NoAST * no);
 static void ast_imprimir_tipo_inicio(NoAST * no);
+static void ast_imprimir_tipo_referencia(NoAST * no);
 
 //////////////////////////////
 // Identificador
@@ -56,9 +57,12 @@ static FuncaoImpressao impressao_factory(NoAST * no) {
         return *ast_imprimir_tipo_parentese;
     if (no->tipo == AST_TIPO_OPERACAO_INICIO)
         return *ast_imprimir_tipo_inicio;
+    if(no->tipo == AST_TIPO_REFERENCIA)
+        return *ast_imprimir_tipo_referencia;
 
     return NULL;
 }
+
 
 static void ast_imprimir_tipo_constante(NoAST * no) {
     NoConstanteAST * constante = (NoConstanteAST *) no->no;
@@ -164,6 +168,25 @@ static void ast_imprimir_tipo_atribuicao(NoAST * no) {
     free(atribuicao_identificador);
     free(expressao_identificador);
     free(ponto_virgula_identificador);
+}
+
+static void ast_imprimir_tipo_referencia(NoAST * no) {
+    NoReferenciaAST * referencia = (NoReferenciaAST *) no->no;
+
+    char * variavel_identificador = gerar_identificador("variavel");
+    char * nome_variavel_identificador = gerar_identificador("nome_variavel");
+
+    no->identificador = no->pai_identificador;
+    
+    //Variavel
+    printf("%s [label=\"%s\"]; \n", variavel_identificador, "t_variavel");
+    printf("%s [label=\"%s\"]; \n", nome_variavel_identificador, referencia->simbolo->nome);
+    printf("%s -> %s; \n", variavel_identificador, nome_variavel_identificador);
+
+    //  Pai -> Variável
+    printf("%s -> %s; \n", no->identificador, variavel_identificador);    
+  
+    free(variavel_identificador); 
 }
 
 static void ast_imprimir_tipo_parentese(NoAST * no) {

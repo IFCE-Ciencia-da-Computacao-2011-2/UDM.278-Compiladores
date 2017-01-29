@@ -6,8 +6,7 @@
 #include "mensagem.h"
 
 #include "gramatica.tab.h"
-
-
+    
 // https://latedev.wordpress.com/2012/10/29/understanding-printf/
 char * mensagem_preparar(const char * fmt, ...) {
     int size = 40, n;
@@ -41,6 +40,8 @@ void mensagem_cabecalho(FILE * arquivo, char * nome_arquivo, int linha, int colu
 }
 
 void yyerror(char *s, ...) {
+  fprintf(stderr, "Algo de errado não está certo\n");
+
   /*
   va_list ap;
   va_start(ap, s);
