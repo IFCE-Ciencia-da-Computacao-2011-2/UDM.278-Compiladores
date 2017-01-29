@@ -53,15 +53,16 @@ extern void yyerror(char *s, ...);
 
 %token t_abre_parentese t_fecha_parentese t_virgula t_ponto_virgula
 
-// Mais prioritário vem por último
+// Vertical: Último é mais prioritário que o primeiro
+// Horizontal: Direita mais prioritário que esquerda
 %right t_atribuicao
 
-%left t_bool_not
 %left t_bool_and t_bool_or
-%left t_comparacao_menor t_comparacao_menor_igual t_operacao_maior t_operacao_maior_igual
 %left t_comparacao_igual t_comparacao_diferente
+%left t_comparacao_menor t_comparacao_menor_igual t_operacao_maior t_operacao_maior_igual
 %left t_adicao t_subtracao               // Verificar prioridade
 %left t_multiplicacao t_divisao t_resto  // Verificar prioridade
+%left t_bool_not
 
 // Tokens da gramática: Elementos não terminais
 %type<no> declaracao_variaveis_meio declaracao_variavel_meio declaracao_variavel_fim
