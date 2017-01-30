@@ -1,2 +1,0 @@
-Testes a serem criados
-j=2+3<4+1;
