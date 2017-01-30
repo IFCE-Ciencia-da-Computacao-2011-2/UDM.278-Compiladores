@@ -3,11 +3,16 @@
 ## Execute
 
 ```bash
-# Em Tools > Terminal
+# Compile
 sh make.sh
+# Execute
+./vando
 ```
 
 ## Tests
+
+Due to the time taken, the tests were ~abandoned~ partially implemented
+The structure of the tests is legal, you can take advantage of future work.
 
 ### Execute
 
@@ -33,60 +38,13 @@ python3 test.py
 
 ## Grammar
 
-### Variables definition
-
 ```
 # Acceptable
-int a, b, c;
-int a, b; bool c;
-# Unnacceptable
-a int
-int a, b, c
-int a  b, c;
-int bool;
+int a1, b1, cad;
+bool i,j;
+a1 = 0
+b1 = a1 + 40;
+i = a1>b1;
+j=(2+3) < (4+1);
 ```
 
-```
-DEFINICAO_VARIAVEIS -> TIPO DEFINICAO_VARIAVEIS_MEIO
-                    |  TIPO DEFINICAO_VARIAVEL_FIM
-DEFINICAO_VARIAVEIS_MEIO -> VARIAVEL , DEFINICAO_VARIAVEIS_MEIO
-                         |  VARIAVEL , DEFINICAO_VARIAVEL_FIM
-DEFINICAO_VARIAVEL_FIM -> VARIAVEL ;
-
-TIPO -> int | bool
-```
-
-### Variables attributions
-
-### Numerical expressions
-
-### Boolean expressions
-
-```
-# Acceptable
-a = true;
-a = false;
-b = a < a2;
-c = not a;
-# Unnacceptable
-d = not 2;
-```
-
-```
-ATRIBUICAO -> VARIAVEL = EXPRESSAO
-EXPRESSAO  -> EXPRESSAO
-           |  OPERACAO_INICIO EXPRESSAO
-           |  ( EXPRESSAO )
-
-OPERACAO_INICIO -> not
-
-// Definir ordem
-OPERACAO_MEIO -> <
-              |  <=
-              |  >
-              |  >=
-              |  ==
-              |  !=
-              |  and
-              |  or
-```
