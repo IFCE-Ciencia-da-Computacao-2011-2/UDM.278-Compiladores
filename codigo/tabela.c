@@ -68,6 +68,7 @@ static Simbolo * tabela_new(Simbolo * simbolo, unsigned int id, char * nome_vari
   simbolo->id = total_simbolos;
   strcpy(simbolo->nome, nome_variavel);
   simbolo->atribuido = 0;
+  simbolo->tipo = 0;
 
   return simbolo;
 }
