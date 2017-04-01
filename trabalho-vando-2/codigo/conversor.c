@@ -36,9 +36,12 @@ static void imprimir_cabecalho() {
 static void imprimir_linha_declaracao(ListaEncadeada * linha_declaracao);
 
 static void imprimir_declaracao_variaveis(ListaEncadeada * declaracoes) {
-  //for elemento in declarações {
-    imprimir_linha_declaracao(declaracoes);
-  //}
+  ListaElemento * elemento = declaracoes->primeiro;
+
+  while (elemento != NULL) {
+    imprimir_linha_declaracao((ListaEncadeada *) elemento->valor);
+    elemento = elemento->proximo;
+  }
 }
 
 /**
@@ -51,13 +54,14 @@ static void imprimir_declaracao_variaveis(ListaEncadeada * declaracoes) {
  * ```
  */
 static void imprimir_linha_declaracao(ListaEncadeada * linha_declaracao) {
-  ListaEncadeada * elemento = linha_declaracao;
+  ListaElemento * elemento = linha_declaracao->primeiro;
 
   Simbolo * simbolo = (Simbolo *) elemento->valor;
-  printf("%s %s ", SimboloTipoDescricao[simbolo->tipo], simbolo->nome);
+
+  printf("    %s %s", SimboloTipoDescricao[simbolo->tipo], simbolo->nome);
 
   while (elemento->proximo != NULL) {
-    elemento = (ListaEncadeada *) elemento->proximo;
+    elemento = (ListaElemento *) elemento->proximo;
     simbolo = (Simbolo *) elemento->valor;
 
     printf(", %s", simbolo->nome);

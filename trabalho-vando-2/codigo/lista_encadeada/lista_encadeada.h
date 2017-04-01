@@ -2,12 +2,18 @@
 
 #define __LISTA_ENCADEADA_H
 
-
 typedef struct {
   void * valor;
   void * proximo;
 
+} ListaElemento;
+
+typedef struct {
+  ListaElemento * primeiro;
+  ListaElemento * ultimo;
+
 } ListaEncadeada;
+
 
 /**
  * Cria uma lista encadeada com um elemento (valor dado)
@@ -15,7 +21,8 @@ typedef struct {
 extern ListaEncadeada * new_lista_encadeada(void * valor);
 
 /**
- * Concatena duas lista, apontando o fim da `lista` para `lista_fim`
+ * DESTROI AS DUAS LISTAS e gera uma nova lista concatenando
+ * `lista` e `lista_fim`
  */
 extern ListaEncadeada * lista_concatenar(ListaEncadeada * lista, ListaEncadeada * lista_fim);
 

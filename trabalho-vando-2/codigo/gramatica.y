@@ -62,7 +62,7 @@ extern void yyerror(char *s, ...);
 %%
 /************************************************************/
 
-programa: t_var variavel_declaracao t_begin t_end fim_codigo {
+programa: t_var lista_declaracoes t_begin t_end fim_codigo {
 //programa: t_var lista_declaracoes t_begin lista_comandos t_end fim_codigo {
   //no_new_raiz($2, $4);
   NoAST * no = no_new_raiz($2, NULL);
@@ -76,14 +76,11 @@ programa: t_var variavel_declaracao t_begin t_end fim_codigo {
 /******************************
  * Declarações
  ******************************/
-lista_declaracoes: lista_declaracoes ';' variavel_declaracao
+lista_declaracoes: lista_declaracoes ';' variavel_declaracao { $$ = lista_concatenar($1, new_lista_encadeada($3)); }
                  | variavel_declaracao { $$ = new_lista_encadeada($1); }
 ;
 
-variavel_declaracao: tipo ':' lista_variaveis {
-  logica_declarar_lista_variaveis($3, $1);
-  $$ = $3;
-}
+variavel_declaracao: tipo ':' lista_variaveis { $$ = logica_declarar_lista_variaveis($3, $1); }
 ;
 
 tipo: t_int    {$$ = SIMBOLO_TIPO_INTEIRO;}

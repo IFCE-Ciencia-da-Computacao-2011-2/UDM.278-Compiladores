@@ -5,16 +5,18 @@
 
 static void logica_declarar_variavel(Simbolo * simbolo, SimboloTipo tipo);
 
-void logica_declarar_lista_variaveis(ListaEncadeada * lista, SimboloTipo tipo) {
-  ListaEncadeada * elemento = lista;
+ListaEncadeada * logica_declarar_lista_variaveis(ListaEncadeada * lista, SimboloTipo tipo) {
+  ListaElemento * elemento = lista->primeiro;
 
   while (elemento != NULL) {
     Simbolo * simbolo = (Simbolo *) elemento->valor;
 
     logica_declarar_variavel(simbolo, tipo);
 
-    elemento = elemento->proximo;
+    elemento = (ListaElemento *) elemento->proximo;
   }
+
+  return lista;
 }
 
 static void logica_declarar_variavel(Simbolo * simbolo, SimboloTipo tipo) {

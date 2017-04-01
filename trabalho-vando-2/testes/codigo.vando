@@ -1,5 +1,6 @@
 var
-    string : nome;
-    int a, b
+    string : nome, curso, campus;
+    int : idade, semestre, ira;
+    bool : cursando
 begin
 end
