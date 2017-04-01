@@ -1,0 +1,5 @@
+var
+    string : nome;
+    int a, b
+begin
+end

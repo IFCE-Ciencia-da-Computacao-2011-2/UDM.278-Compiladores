@@ -2,7 +2,7 @@
 #include "arvore_sintatica.h"
 
 static void imprimir_cabecalho();
-static void imprimir_declaracao_variaveis(NoAST * no_declaracoes);
+static void imprimir_declaracao_variaveis(ListaEncadeada * declaracoes);
 static void imprimir_comandos(NoAST * no_expressoes);
 
 /****************************
@@ -16,7 +16,7 @@ void imprimir_codigo(NoAST * no_raiz) {
 
   printf("int main() {\n");
 
-  imprimir_declaracao_variaveis(no->no_declaracoes);
+  imprimir_declaracao_variaveis(no->declaracoes);
   imprimir_comandos(no->no_comandos);
 
   printf("}\n");
@@ -33,11 +33,12 @@ static void imprimir_cabecalho() {
 /****************************
  * Declaração de variáveis
  ****************************/
-static void imprimir_linha_declaracao(NoAST * no_linha_declaracao);
+static void imprimir_linha_declaracao(ListaEncadeada * linha_declaracao);
 
-static void imprimir_declaracao_variaveis(NoAST * no_declaracoes) {
-  //lista de declarações
-  imprimir_linha_declaracao(no_declaracoes);
+static void imprimir_declaracao_variaveis(ListaEncadeada * declaracoes) {
+  //for elemento in declarações {
+    imprimir_linha_declaracao(declaracoes);
+  //}
 }
 
 /**
@@ -49,17 +50,17 @@ static void imprimir_declaracao_variaveis(NoAST * no_declaracoes) {
  * string : msg
  * ```
  */
-static void imprimir_linha_declaracao(NoAST * no_linha_declaracao) {
-  NoElementoListaEncadeadaAST * no = (NoElementoListaEncadeadaAST *) no_linha_declaracao->no;
+static void imprimir_linha_declaracao(ListaEncadeada * linha_declaracao) {
+  ListaEncadeada * elemento = linha_declaracao;
 
-  printf("%s ", SimboloTipoDescricao[no->simbolo->tipo]);
+  Simbolo * simbolo = (Simbolo *) elemento->valor;
+  printf("%s %s ", SimboloTipoDescricao[simbolo->tipo], simbolo->nome);
 
-  printf("%s", no->simbolo->nome);
+  while (elemento->proximo != NULL) {
+    elemento = (ListaEncadeada *) elemento->proximo;
+    simbolo = (Simbolo *) elemento->valor;
 
-  while (no->proximo_no != NULL) {
-    no = (NoElementoListaEncadeadaAST *) no->proximo_no->no;
-
-    printf(", %s", no->simbolo->nome);
+    printf(", %s", simbolo->nome);
   }
 
   printf(";\n");

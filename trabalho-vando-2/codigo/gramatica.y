@@ -5,6 +5,7 @@
 #include "common.h"
 #include "logica.h"
 #include "mensagem.h"
+#include "lista_encadeada/lista_encadeada.h"
 
 #include "regras.tab.h"
 #include "conversor.h"
@@ -29,8 +30,8 @@ extern void yyerror(char *s, ...);
  // Declarar tipo de uma variável
  SimboloTipo tipo;
 
- // Algo que não foi totalmente processado
- NoAST * no;
+ // Lista de elementos
+ ListaEncadeada * lista;
 }
 
 
@@ -53,8 +54,9 @@ extern void yyerror(char *s, ...);
 
 // Tokens da gramática: Elementos não terminais
 %type<tipo> tipo
-%type<no> variavel_declaracao
-%type<no> lista_variaveis variavel
+%type<lista> lista_declaracoes
+%type<lista> variavel_declaracao
+%type<lista> lista_variaveis variavel
 
 /************************************************************/
 %%
@@ -75,7 +77,7 @@ programa: t_var variavel_declaracao t_begin t_end fim_codigo {
  * Declarações
  ******************************/
 lista_declaracoes: lista_declaracoes ';' variavel_declaracao
-                 | variavel_declaracao {printf("passou por aqui\n");}
+                 | variavel_declaracao { $$ = new_lista_encadeada($1); }
 ;
 
 variavel_declaracao: tipo ':' lista_variaveis {
@@ -89,11 +91,11 @@ tipo: t_int    {$$ = SIMBOLO_TIPO_INTEIRO;}
     | t_string {$$ = SIMBOLO_TIPO_STRING;}
 ;
 
-lista_variaveis: lista_variaveis ',' variavel { $$ = no_vincular_elementos_lista_encadeada($1, $3); }
+lista_variaveis: lista_variaveis ',' variavel { $$ = lista_concatenar($1, $3); }
                | variavel { $$ = $1; }
 ;
 
-variavel: t_variavel { $$ = no_new_elemento_lista_encadeada($1); }
+variavel: t_variavel { $$ = new_lista_encadeada($1); }
 ;
 
 /******************************
