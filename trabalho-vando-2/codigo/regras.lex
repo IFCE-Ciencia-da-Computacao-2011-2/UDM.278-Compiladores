@@ -25,6 +25,8 @@ ID_INVALIDO {NUM}{ID}|({ID}{ID_CARACTERES_INVALIDOS}{ID})+
 
 [[:space:]]
 
+[,:;]	return *yytext;
+
 int    return t_int;
 bool   return t_bool;
 string return t_string;

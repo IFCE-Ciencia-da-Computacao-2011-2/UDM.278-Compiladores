@@ -6,7 +6,7 @@
 #include "mensagem.h"
 
 #include "gramatica.tab.h"
-    
+
 // https://latedev.wordpress.com/2012/10/29/understanding-printf/
 char * mensagem_preparar(const char * fmt, ...) {
     int size = 40, n;

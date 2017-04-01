@@ -3,6 +3,7 @@
 #include <stdarg.h>
 
 #include "common.h"
+#include "logica.h"
 #include "mensagem.h"
 
 #include "regras.tab.h"
@@ -24,6 +25,12 @@ extern void yyerror(char *s, ...);
 %union {
  // Identificador de variável na tabela de símbolos
  Simbolo * simbolo;
+
+ // Declarar tipo de uma variável
+ SimboloTipo tipo;
+
+ // Algo que não foi totalmente processado
+ NoAST * no;
 }
 
 
@@ -44,16 +51,19 @@ extern void yyerror(char *s, ...);
 // Fim do arquivo
 %token t_eof
 
-// Pontuação
-%token t_virgula t_ponto_virgula t_dois_pontos
-
 // Tokens da gramática: Elementos não terminais
+%type<tipo> tipo
+%type<no> variavel_declaracao
+%type<no> lista_variaveis variavel
 
+/************************************************************/
 %%
+/************************************************************/
+
+programa: t_var variavel_declaracao t_begin t_end fim_codigo {
 //programa: t_var lista_declaracoes t_begin lista_comandos t_end fim_codigo {
-programa: t_var t_begin t_end fim_codigo {
   //no_new_raiz($2, $4);
-  NoAST * no = no_new_raiz(NULL, NULL);
+  NoAST * no = no_new_raiz($2, NULL);
   imprimir_codigo(no);
   //no_free(no);
   exit(0);
@@ -61,27 +71,29 @@ programa: t_var t_begin t_end fim_codigo {
 ;
 
 
-
 /******************************
  * Declarações
  ******************************/
-lista_declaracoes: lista_declaracoes t_ponto_virgula variavel_declaracao
-                 | variavel_declaracao
+lista_declaracoes: lista_declaracoes ';' variavel_declaracao
+                 | variavel_declaracao {printf("passou por aqui\n");}
 ;
 
-variavel_declaracao: tipo t_dois_pontos lista_variaveis
+variavel_declaracao: tipo ':' lista_variaveis {
+  logica_declarar_lista_variaveis($3, $1);
+  $$ = $3;
+}
 ;
 
-tipo: t_int
-    | t_bool
-    | t_string
+tipo: t_int    {$$ = SIMBOLO_TIPO_INTEIRO;}
+    | t_bool   {$$ = SIMBOLO_TIPO_BOOLEANO;}
+    | t_string {$$ = SIMBOLO_TIPO_STRING;}
 ;
 
-lista_variaveis: lista_variaveis t_virgula variavel
-               | variavel
+lista_variaveis: lista_variaveis ',' variavel { $$ = no_vincular_elementos_lista_encadeada($1, $3); }
+               | variavel { $$ = $1; }
 ;
 
-variavel: t_variavel
+variavel: t_variavel { $$ = no_new_elemento_lista_encadeada($1); }
 ;
 
 /******************************

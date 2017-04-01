@@ -4,7 +4,7 @@
 
 #include "tabela.h"
 
-const char * SimboloTipoDescricao[] = {"int", "bool"};
+const char * SimboloTipoDescricao[] = {"int", "bool", "char[]"};
 
 static Simbolo * tabela_simbolos[MAX_SIMBOLOS];
 static unsigned int total_simbolos = 0;

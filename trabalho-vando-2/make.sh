@@ -7,7 +7,7 @@ rm gramatica.tab.c gramatica.tab.h
 bison -d gramatica.y
 flex regras.lex
 
-gcc -o vando regras.tab.c tabela.c gramatica.tab.c mensagem.c arvore_sintatica.c conversor.c
+gcc -o vando regras.tab.c logica.c tabela.c gramatica.tab.c mensagem.c arvore_sintatica.c conversor.c
 mv vando ..
 cd ..
 #python3 test.py

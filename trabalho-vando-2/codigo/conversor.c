@@ -3,7 +3,7 @@
 
 static void imprimir_cabecalho();
 static void imprimir_declaracao_variaveis(NoAST * no_declaracoes);
-static void imprimir_expressoes(NoAST * no_expressoes);
+static void imprimir_comandos(NoAST * no_expressoes);
 
 /****************************
  * Cabeçalho
@@ -17,7 +17,7 @@ void imprimir_codigo(NoAST * no_raiz) {
   printf("int main() {\n");
 
   imprimir_declaracao_variaveis(no->no_declaracoes);
-  imprimir_expressoes(no->no_expressoes);
+  imprimir_comandos(no->no_comandos);
 
   printf("}\n");
 }
@@ -33,14 +33,41 @@ static void imprimir_cabecalho() {
 /****************************
  * Declaração de variáveis
  ****************************/
-static void imprimir_declaracao_variaveis(NoAST * no_declaracoes) {
+static void imprimir_linha_declaracao(NoAST * no_linha_declaracao);
 
+static void imprimir_declaracao_variaveis(NoAST * no_declaracoes) {
+  //lista de declarações
+  imprimir_linha_declaracao(no_declaracoes);
 }
 
+/**
+ * Uma linha declaração pode ter a declaração de mais de uma variável para
+ * um mesmo tipo:
+ *
+ * ```
+ * int : x, i, y
+ * string : msg
+ * ```
+ */
+static void imprimir_linha_declaracao(NoAST * no_linha_declaracao) {
+  NoElementoListaEncadeadaAST * no = (NoElementoListaEncadeadaAST *) no_linha_declaracao->no;
+
+  printf("%s ", SimboloTipoDescricao[no->simbolo->tipo]);
+
+  printf("%s", no->simbolo->nome);
+
+  while (no->proximo_no != NULL) {
+    no = (NoElementoListaEncadeadaAST *) no->proximo_no->no;
+
+    printf(", %s", no->simbolo->nome);
+  }
+
+  printf(";\n");
+}
 
 /****************************
  * Expressões
  ****************************/
-static void imprimir_expressoes(NoAST * no_expressoes) {
+static void imprimir_comandos(NoAST * no_comandos) {
 
 }

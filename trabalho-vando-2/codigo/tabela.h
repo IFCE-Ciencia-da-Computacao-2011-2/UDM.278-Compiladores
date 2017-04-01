@@ -7,6 +7,7 @@
 typedef enum {
   SIMBOLO_TIPO_INTEIRO,
   SIMBOLO_TIPO_BOOLEANO,
+  SIMBOLO_TIPO_STRING,
 
   SIMBOLO_TIPO_NULL // A linguagem não aceita null.
 } SimboloTipo;
