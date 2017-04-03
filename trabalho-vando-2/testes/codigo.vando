@@ -1,6 +1,9 @@
 var
-    string : nome, curso, campus;
-    int : idade, semestre, ira;
+    string : nome, curso, campus
+    int : idade, semestre, ira
     bool : cursando
 begin
+    do idade := 1 + 2 to 100 - 3 begin
+      2 + 3
+    end
 end

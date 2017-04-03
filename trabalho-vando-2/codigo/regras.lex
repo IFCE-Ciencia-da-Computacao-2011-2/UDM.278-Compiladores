@@ -36,8 +36,13 @@ var    return t_var;
 begin  return t_begin;
 end    return t_end;
 
+do     return t_do;
+to     return t_to;
+
 true   return t_constante_bool_true;
 false  return t_constante_bool_false;
+
+
 
 
 {ID} {
