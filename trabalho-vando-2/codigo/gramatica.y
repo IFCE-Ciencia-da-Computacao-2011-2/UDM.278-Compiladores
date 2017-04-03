@@ -32,6 +32,8 @@ extern void yyerror(char *s, ...);
 
  // Lista de elementos
  ListaEncadeada * lista;
+
+ int int_value;
 }
 
 
@@ -41,6 +43,11 @@ extern void yyerror(char *s, ...);
 %token t_bool
 %token t_string
 %token <simbolo> t_variavel
+
+%token t_constante_int
+%token t_constante_bool_true
+%token t_constante_bool_false
+//%token t_constante_string
 
 // Palavras reservadas
 %token t_var // Bloco de definição de variáveis
@@ -62,7 +69,7 @@ extern void yyerror(char *s, ...);
 %%
 /************************************************************/
 
-programa: t_var lista_declaracoes t_begin t_end fim_codigo {
+programa: t_var lista_declaracoes t_begin expressao t_end fim_codigo {
 //programa: t_var lista_declaracoes t_begin lista_comandos t_end fim_codigo {
   //no_new_raiz($2, $4);
   NoAST * no = no_new_raiz($2, NULL);
@@ -98,6 +105,46 @@ variavel: t_variavel { $$ = new_lista_encadeada($1); }
 /******************************
  * Comandos
  ******************************/
+ /*lista_comandos : lista_comandos comando
+                 | comando
+ ;
+ comando : palavra_reservada_do t_variavel ':' '=' t_valor_int palavra_reservada_to t_valor_int
+           palavra_reservada_begin lista_comandos t_end
+         | palavra_reservada_if expressao lista_comandos t_end
+         | palavra_reservada_if expressao lista_comandos
+           palavra_reservada_else lista_comandos t_end
+         | palavra_reservada_while expressao
+           lista_comandos t_end
+         | palavra_reservada_read t_variavel ';'
+         | palavra_reservada_write expressao ';'
+ ;
+*/
+ expressao : expressao '+' expressao
+           | expressao '-' expressao
+           /*| expressao '*' expressao
+           | expressao '/' expressao
+           | '-' expressao
+           | expressao  boolean_or expressao
+           | expressao boolean_and expressao
+           | boolean_not expressao
+           | expressao  boolean_igual expressao
+           | expressao  boolean_diferente expressao
+           | expressao  boolean_maior expressao
+           | expressao  boolean_menor expressao
+           | expressao  boolean_menor_igual expressao
+           | expressao  boolean_maior_igual expressao
+           | '(' expressao ')'*/
+           | constante
+           //| t_variavel
+ ;
+
+ constante : t_constante_int
+           | constante_bool
+           //| t_constante_string
+ ;
+
+constante_bool :  t_constante_bool_true
+                | t_constante_bool_false
 
 /******************************
 * Fim de arquivo

@@ -25,19 +25,29 @@ ID_INVALIDO {NUM}{ID}|({ID}{ID_CARACTERES_INVALIDOS}{ID})+
 
 [[:space:]]
 
-[,:;]	return *yytext;
+[,:;=+\-*/()]	return *yytext;
 
 int    return t_int;
 bool   return t_bool;
 string return t_string;
 
+
 var    return t_var;
 begin  return t_begin;
 end    return t_end;
 
+true   return t_constante_bool_true;
+false  return t_constante_bool_false;
+
+
 {ID} {
   yylval.simbolo = tabela_adicionar(yytext);
   return t_variavel;
+}
+
+{NUM} {
+  yylval.int_value = atoi(yytext);
+  return t_constante_int;
 }
 
 <<EOF>> { return t_eof; }
