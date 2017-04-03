@@ -37,6 +37,7 @@ extern void yyerror(char *s, ...);
  NoAST * no;
 
  int int_value;
+ char string_value[4095]; // C99 limit string
 }
 
 
@@ -50,7 +51,7 @@ extern void yyerror(char *s, ...);
 %token t_constante_int
 %token t_constante_bool_true
 %token t_constante_bool_false
-//%token t_constante_string
+%token t_constante_string
 
 
 // Palavras reservadas
@@ -58,6 +59,9 @@ extern void yyerror(char *s, ...);
 %token t_begin // Bloco de código
 %token t_end // Fim do código
 %token t_do t_to // Laço "for"
+%token t_while // Laço "while"
+%token t_read t_write // input e print
+%token t_if t_else // condicional
 
 // Análise léxica detecta e trata algum erro
 %token t_noop
@@ -65,6 +69,8 @@ extern void yyerror(char *s, ...);
 %token t_eof
 
 // Prioridades
+// Vertical: Último é mais prioritário que o primeiro
+// Horizontal: Direita mais prioritário que esquerda
 //%left t_bool_and t_bool_or
 //%left t_comparacao_igual t_comparacao_diferente
 //%left t_comparacao_menor t_comparacao_menor_igual t_operacao_maior t_operacao_maior_igual
@@ -84,12 +90,13 @@ extern void yyerror(char *s, ...);
 %type<no> expressao
 %type<no> constante constante_int constante_bool
 
+%type<string_value> t_constante_string
+
 /************************************************************/
 %%
 /************************************************************/
 
 programa: t_var lista_declaracoes t_begin lista_comandos t_end fim_codigo {
-//programa: t_var lista_declaracoes t_begin lista_comandos t_end fim_codigo {
   NoAST * no = no_new_raiz($2, $4);
   imprimir_codigo(no);
   //no_free(no);
@@ -128,19 +135,27 @@ lista_comandos: lista_comandos comando { $$ = lista_concatenar($1, new_lista_enc
 ;
 
 comando: t_do t_variavel ':' '=' expressao t_to expressao t_begin
-           expressao // lista_comandos
-         t_end { $$ = no_new_repeticao_for($2, $5, $7, new_lista_encadeada($9)); }
-;/*
-         | palavra_reservada_if expressao lista_comandos t_end
-         | palavra_reservada_if expressao lista_comandos
-           palavra_reservada_else lista_comandos t_end
-         | palavra_reservada_while expressao
-           lista_comandos t_end
-         | palavra_reservada_read t_variavel ';'
-         | palavra_reservada_write expressao ';'
- ;
-*/
+           lista_comandos
+         t_end { $$ = no_new_repeticao_for($2, $5, $7, $9); }
+       | t_if expressao t_begin
+           lista_comandos
+         t_end { $$ = no_new_if_else($2, $4, NULL); }
+       | t_if expressao t_begin
+           lista_comandos
+         t_else
+           lista_comandos
+         t_end { $$ = no_new_if_else($2, $4, $6); }
+       | t_while expressao t_begin
+           lista_comandos
+         t_end { $$ = no_new_repeticao_while($2, $4); }
+       | t_read t_variavel ';' { $$ = no_new_input($2); }
+       | t_write expressao ';' { $$ = no_new_print($2); }
+       | t_variavel ':' '=' expressao ';' { $$ = no_new_atribuicao($1, $4); }
+;
 
+/******************************
+ * Expressões
+ ******************************/
 expressao: expressao '+' expressao { $$ = no_new_expressao($1, ADICAO, $3); }
          | expressao '-' expressao { $$ = no_new_expressao($1, SUBTRACAO, $3); }
          /*| expressao '*' expressao
@@ -157,12 +172,12 @@ expressao: expressao '+' expressao { $$ = no_new_expressao($1, ADICAO, $3); }
            | expressao  boolean_maior_igual expressao
            | '(' expressao ')'*/
          | constante { $$ = no_new_expressao($1, CONSTANTE, NULL); }
-         //| t_variavel
+         | t_variavel { $$ = no_new_expressao(NULL/*no_new_variavel($1)*/, VARIAVEL, NULL); }
 ;
 
 constante: constante_int { $$ = $1; }
          | constante_bool { $$ = $1; }
-       //| t_constante_string
+         | t_constante_string { $$ = no_new_constante($1, SIMBOLO_TIPO_STRING); }
 ;
 
 constante_int: t_constante_int { $$ = NULL; }

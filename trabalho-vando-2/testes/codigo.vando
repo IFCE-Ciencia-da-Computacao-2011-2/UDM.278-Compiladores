@@ -3,7 +3,23 @@ var
     int : idade, semestre, ira
     bool : cursando
 begin
-    do idade := 1 + 2 to 100 - 3 begin
-      2 + 3
+    msg := "digite um número";
+    msg := "";
+    read semestre;
+    write semestre;
+    semestre := 2 + 5 - 3;
+
+    if cursando begin
+      write semestre;
+    end
+
+    if 2 - 2 begin
+      while cursando begin
+        semestre := 5 - 4;
+      end
+    else
+      do idade := 1 + 2 to 100 - 3 begin
+        semestre := 2 + 3;
+      end
     end
 end

@@ -17,6 +17,7 @@ void imprimir_codigo(NoAST * no_raiz) {
   printf("int main() {\n");
 
   imprimir_declaracao_variaveis(no->declaracoes);
+  printf("\n");
   imprimir_comandos(no->comandos);
 
   printf("}\n");
@@ -74,8 +75,18 @@ static void imprimir_linha_declaracao(ListaEncadeada * linha_declaracao) {
  * Comandos e expressoes
  ****************************/
 static void imprimir_no_ast(NoAST * no);
+
 static void imprimir_for(NoRepeticaoForAST * no_for);
+static void imprimir_while(NoRepeticaoWhileAST * no_while);
+
+static void imprimir_atribuicao(NoAtribuicaoAST * no_atribuicao);
+
 static void imprimir_expressao(NoExpressaoAST * no_expressao);
+
+static void imprimir_print(NoPrintAST * no_print);
+static void imprimir_input(NoInputAST * no_input);
+
+static void imprimir_if_else(NoIfElseAST * no_condicional);
 
 static void imprimir_comandos(ListaEncadeada * comandos) {
   ListaElemento * elemento = comandos->primeiro;
@@ -92,6 +103,21 @@ static void imprimir_comandos(ListaEncadeada * comandos) {
 static void imprimir_no_ast(NoAST * no) {
   if (no->tipo == AST_TIPO_REPETICAO_FOR)
     imprimir_for((NoRepeticaoForAST *) no->no);
+
+  else if (no->tipo == AST_TIPO_REPETICAO_WHILE)
+    imprimir_while((NoRepeticaoWhileAST *) no->no);
+
+  else if (no->tipo == AST_TIPO_ATRIBUICAO)
+    imprimir_atribuicao((NoAtribuicaoAST *) no->no);
+
+  else if (no->tipo == AST_TIPO_PRINT)
+    imprimir_print((NoPrintAST *) no->no);
+
+  else if (no->tipo == AST_TIPO_INPUT)
+    imprimir_input((NoInputAST *) no->no);
+
+  else if (no->tipo == AST_TIPO_IF_ELSE)
+    imprimir_if_else((NoIfElseAST *) no->no);
 
   else if (no->tipo == AST_TIPO_EXPRESSAO)
     imprimir_expressao((NoExpressaoAST *) no->no);
@@ -112,6 +138,47 @@ static void imprimir_for(NoRepeticaoForAST * no_for) {
   imprimir_comandos(no_for->comandos);
   printf("\n");
 
+  printf("    }\n");
+}
+
+static void imprimir_while(NoRepeticaoWhileAST * no_while) {
+  printf("\n");
+  printf("    while (");
+    imprimir_no_ast(no_while->expressao);
+    printf(") {\n");
+
+  imprimir_comandos(no_while->comandos);
+  printf("\n");
+
+  printf("    }\n");
+}
+
+static void imprimir_atribuicao(NoAtribuicaoAST * no_atribuicao) {
+  char * variavel = no_atribuicao->variavel->nome;
+
+  printf("    %s = ", variavel);
+  imprimir_no_ast(no_atribuicao->expressao);
+  printf(";\n");
+}
+
+static void imprimir_print(NoPrintAST * no_print) {
+  printf("    printf();\n");
+}
+
+static void imprimir_input(NoInputAST * no_input) {
+  printf("    [INPUT];\n");
+}
+
+static void imprimir_if_else(NoIfElseAST * no_condicional) {
+  printf("    if (");
+    imprimir_no_ast(no_condicional->expressao);
+  printf(") {\n");
+    imprimir_comandos(no_condicional->comandos_if);
+
+  if (no_condicional->comandos_else != NULL) {
+  printf("    } else {\n");
+    imprimir_comandos(no_condicional->comandos_else);
+  }
   printf("    }\n");
 }
 
