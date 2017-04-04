@@ -88,9 +88,10 @@ extern void yyerror(char *s, ...);
 %type<lista> lista_comandos
 %type<no> comando
 %type<no> expressao
-%type<no> expressao_valida expressao_booleana expressao_inteira
+%type<no> expressao_booleana expressao_inteira
 %type<no> constante constante_int constante_bool
 
+%type<simbolo> variavel_declarada
 %type<string_value> t_constante_string
 
 /************************************************************/
@@ -135,7 +136,7 @@ lista_comandos: lista_comandos comando { $$ = lista_concatenar($1, new_lista_enc
               | comando { $$ = new_lista_encadeada($1); }
 ;
 
-comando: t_do t_variavel ':' '=' expressao_inteira t_to expressao_inteira t_begin
+comando: t_do variavel_declarada ':' '=' expressao_inteira t_to expressao_inteira t_begin
            lista_comandos
          t_end { $$ = no_new_repeticao_for($2, $5, $7, $9); }
        | t_if expressao_booleana t_begin
@@ -149,17 +150,18 @@ comando: t_do t_variavel ':' '=' expressao_inteira t_to expressao_inteira t_begi
        | t_while expressao_booleana t_begin
            lista_comandos
          t_end { $$ = no_new_repeticao_while($2, $4); }
-       | t_read t_variavel ';' { $$ = no_new_input($2); }
+       | t_read variavel_declarada ';' { $$ = no_new_input($2); }
        | t_write expressao ';' { $$ = no_new_print($2); }
-       | t_variavel ':' '=' expressao_valida ';' { $$ = no_new_atribuicao($1, $4); }
+       | variavel_declarada ':' '=' expressao ';' { $$ = logica_atribuicao_variavel($1, $4); }
 ;
 
+variavel_declarada: t_variavel { $$ = $1; logica_verificar_variavel_declarada($1); }
+;
 /******************************
  * Expressões
  ******************************/
-expressao_valida:   expressao { $$ = $1; /*logica_check_expressao_valida($1);*/  };
-expressao_booleana: expressao { $$ = $1; /*logica_check_expressao_booleana($1);*/ };
-expressao_inteira:  expressao { $$ = $1; /*logica_check_expressao_aritmetica($1->no);*/ };
+expressao_booleana: expressao { $$ = $1; logica_verificar_expressao_booleana((NoExpressaoAST *) $1->no); };
+expressao_inteira:  expressao { $$ = $1; logica_verificar_expressao_inteira((NoExpressaoAST *) $1->no); };
 
 expressao: expressao '+' expressao { $$ = no_new_expressao($1, ADICAO, $3); }
          | expressao '-' expressao { $$ = no_new_expressao($1, SUBTRACAO, $3); }
@@ -177,18 +179,19 @@ expressao: expressao '+' expressao { $$ = no_new_expressao($1, ADICAO, $3); }
            | expressao  boolean_maior_igual expressao
            | '(' expressao ')'*/
          | constante { $$ = no_new_expressao($1, CONSTANTE, NULL); }
-         | t_variavel { $$ = no_new_expressao(NULL/*no_new_variavel($1)*/, VARIAVEL, NULL); }
+         // FIXME VERIFICAR VARIÁVEIL JÁ DECLARADA
+         | t_variavel { $$ = no_new_expressao(no_new_variavel($1), VARIAVEL, NULL); logica_verificar_variavel_declarada($1); }
 ;
 
 constante: constante_int { $$ = $1; }
          | constante_bool { $$ = $1; }
-         | t_constante_string { $$ = no_new_constante($1, SIMBOLO_TIPO_STRING); }
+         | t_constante_string { $$ = no_new_constante_referencia($1, SIMBOLO_TIPO_STRING); }
 ;
 
-constante_int: t_constante_int { $$ = NULL; }
+constante_int: t_constante_int { $$ = no_new_constante(0, SIMBOLO_TIPO_INTEIRO); }
 
-constante_bool: t_constante_bool_true  { $$ = NULL; }
-              | t_constante_bool_false { $$ = NULL; }
+constante_bool: t_constante_bool_true  { $$ = no_new_constante(TRUE, SIMBOLO_TIPO_BOOLEANO); }
+              | t_constante_bool_false { $$ = no_new_constante(FALSE, SIMBOLO_TIPO_BOOLEANO); }
 
 /******************************
 * Fim de arquivo

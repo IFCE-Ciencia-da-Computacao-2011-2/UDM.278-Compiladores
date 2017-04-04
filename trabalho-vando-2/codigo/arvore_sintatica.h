@@ -171,7 +171,11 @@ typedef struct {
  * O que indentifica-as é OperacaoExpressao
  */
 typedef struct {
-  void * valor;
+  union {
+    void * referencia;
+    int inteiro;
+  } valor;
+
   SimboloTipo tipo;
 } NoConstanteAST;
 
@@ -195,6 +199,8 @@ extern NoAST * no_new_input(Simbolo * variavel);
 
 extern NoAST * no_new_expressao(NoAST * no_esquerda, OperacaoExpressao operacao, NoAST * no_direita);
 
-extern NoAST * no_new_constante(void * valor, SimboloTipo tipo_constante);
+extern NoAST * no_new_constante(int valor, SimboloTipo tipo);
+extern NoAST * no_new_constante_referencia(void * valor, SimboloTipo tipo);
+extern NoAST * no_new_variavel(Simbolo * variavel);
 
 #endif

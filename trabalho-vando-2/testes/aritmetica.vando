@@ -1,5 +1,6 @@
 var
     int : idade
 begin
-    idade := 2 + 3;
+    idade := 3 + "asd" - false + 5 + "teste";
+    idade := 3 + idade;
 end

@@ -35,6 +35,17 @@ void mensagem_erro(char * nome_arquivo, int linha, int coluna, char * mensagem, 
     //  fprintf(stderr, " > %s\n", yy_line_buffer);
 }
 
+void mensagem_nota(char * nome_arquivo, int linha, int coluna, char * mensagem, ...) {
+    if (nome_arquivo == NULL)
+      nome_arquivo = "interpretador";
+
+    mensagem_cabecalho(stderr, nome_arquivo, linha, coluna);
+    fprintf(stderr, "\033[1;36mnota:\033[0m ");
+    fprintf(stderr, "%s", mensagem);
+    //if (yy_line_buffer[0] != '\0')
+    //  fprintf(stderr, " > %s\n", yy_line_buffer);
+}
+
 void mensagem_cabecalho(FILE * arquivo, char * nome_arquivo, int linha, int coluna) {
     fprintf(arquivo, "\033[1;97m%s:%d:%d\033[0m ", nome_arquivo, linha, coluna);
 }

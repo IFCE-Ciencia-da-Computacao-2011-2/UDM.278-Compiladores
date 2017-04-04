@@ -8,6 +8,17 @@
 /***********************************
  * Operadores
  ***********************************/
+const char * OperacaoExpressaoDescricao[] = {
+  "constante", "variavel",
+
+  "+", "-", "*", "/",
+
+  ">", ">=", "<", "<=",
+  "==", "!=",
+
+  "||", "&&", "!"
+};
+
 int is_operacao_aritmetica(OperacaoExpressao operacao) {
    return operacao == ADICAO
        || operacao == SUBTRACAO
@@ -30,19 +41,25 @@ int is_operacao_relacional(OperacaoExpressao operacao) {
        || operacao == MAIOR_IGUAL_QUE;
 }
 
-/***********************************
- * Nós
- ***********************************/
-const char * OperacaoExpressaoDescricao[] = {
-  "constante", "variavel",
+static SimboloTipo tipo_simbolo(NoAST * no) {
+  if (no->tipo == AST_TIPO_EXPRESSAO) {
+    NoExpressaoAST * expressao = (NoExpressaoAST *) no->no;
+    return expressao->tipo;
 
-  "+", "-", "*", "/",
+  } else if (no->tipo == AST_TIPO_CONSTANTE) {
+    NoConstanteAST * constante = (NoConstanteAST *) no->no;
+    return constante->tipo;
 
-  ">", ">=", "<", "<=",
-  "==", "!=",
+  } else {
+    NoVariavelAST * no_variavel = (NoVariavelAST *) no->no;
+    return no_variavel->valor->tipo;
+  }
+}
 
-  "||", "&&", "!"
-};
+static int is_atomo(NoAST * no) {
+  return no->tipo == AST_TIPO_VARIAVEL
+      || no->tipo == AST_TIPO_CONSTANTE;
+}
 
 /***********************************
  * Nós
@@ -123,13 +140,33 @@ NoAST * no_new_if_else(NoAST * expressao, ListaEncadeada * comandos_if, ListaEnc
   return no_new(no, AST_TIPO_IF_ELSE);
 }
 
-NoAST * no_new_constante(void * valor, SimboloTipo tipo) {
+NoAST * no_new_constante(int valor, SimboloTipo tipo) {
   NoConstanteAST * no = calloc(1, sizeof(NoConstanteAST));
 
-  no->valor = valor;
+  no->valor.referencia = NULL;
+  no->valor.inteiro = valor;
   no->tipo = tipo;
 
   return no_new(no, AST_TIPO_CONSTANTE);
+}
+
+NoAST * no_new_constante_referencia(void * valor, SimboloTipo tipo) {
+  NoConstanteAST * no = calloc(1, sizeof(NoConstanteAST));
+
+  no->valor.referencia = valor;
+  no->valor.inteiro = 0;
+  no->tipo = tipo;
+
+  return no_new(no, AST_TIPO_CONSTANTE);
+}
+
+
+NoAST * no_new_variavel(Simbolo * variavel) {
+  NoVariavelAST * no = calloc(1, sizeof(NoVariavelAST));
+
+  no->valor = variavel;
+
+  return no_new(no, AST_TIPO_VARIAVEL);
 }
 
 /**********************************
@@ -148,11 +185,13 @@ static void erro_operacao_tipo(char * posicao, NoAST * no, char * operacao, Simb
   free(mensagem);
 }
 
-static void verificar_tipos_elementos(NoExpressaoAST * no);
-static void verificar_operacao_inteiros(NoExpressaoAST * no);
-static void verificar_operacao_string_e_inteiros(NoExpressaoAST * no);
+static SimboloTipo verificar_tipos_elementos(NoExpressaoAST * no);
+static SimboloTipo verificar_operacao_booleanos(NoExpressaoAST * no);
+static SimboloTipo verificar_operacao_inteiros(NoExpressaoAST * no);
+static SimboloTipo verificar_operacao_string_e_inteiros(NoExpressaoAST * no);
+static SimboloTipo verificar_operacao_inteiros_e_booleanos(NoExpressaoAST * no);
 
-static SimboloTipo tipo(NoAST * no);
+static SimboloTipo verificar_operacao_tipos_iguais(NoExpressaoAST * no, SimboloTipo tipo_aceito1, SimboloTipo tipo_aceito2);
 
 NoAST * no_new_expressao(NoAST * no_esquerda, OperacaoExpressao operacao, NoAST * no_direita) {
   NoExpressaoAST * no = calloc(1, sizeof(NoExpressaoAST));
@@ -161,63 +200,112 @@ NoAST * no_new_expressao(NoAST * no_esquerda, OperacaoExpressao operacao, NoAST 
   no->operacao = operacao;
   no->direita = no_direita;
 
-  verificar_tipos_elementos(no);
+  if (no_esquerda != NULL && is_atomo(no_esquerda))
+    no->tipo = tipo_simbolo(no_esquerda);
+  else
+    no->tipo = verificar_tipos_elementos(no);
 
   return no_new(no, AST_TIPO_EXPRESSAO);
 }
 
-static void verificar_tipos_elementos(NoExpressaoAST * no) {
-  verificar_operacao_inteiros(no);
-  verificar_operacao_string_e_inteiros(no);
+static SimboloTipo verificar_tipos_elementos(NoExpressaoAST * no) {
+  SimboloTipo tipo = SIMBOLO_TIPO_NULL;
+
+  tipo = verificar_operacao_booleanos(no);
+  if (tipo != SIMBOLO_TIPO_NULL)
+    return tipo;
+
+  tipo = verificar_operacao_inteiros(no);
+  if (tipo != SIMBOLO_TIPO_NULL)
+    return tipo;
+
+  tipo = verificar_operacao_string_e_inteiros(no);
+  if (tipo != SIMBOLO_TIPO_NULL)
+    return tipo;
+
+  tipo = verificar_operacao_inteiros_e_booleanos(no);
+  if (tipo != SIMBOLO_TIPO_NULL)
+    return tipo;
+
+  return SIMBOLO_TIPO_NULL;
 }
 
-static void verificar_operacao_inteiros(NoExpressaoAST * no) {
-  if (no->operacao != SUBTRACAO
-   && no->operacao != MULTIPLICACAO
-   && no->operacao != DIVISAO)
-    return;
+static SimboloTipo verificar_operacao_booleanos(NoExpressaoAST * no) {
+  if (!is_operacao_logica(no->operacao))
+    return SIMBOLO_TIPO_NULL;
 
   char * operacao = (char *) OperacaoExpressaoDescricao[no->operacao];
 
-  if (no->esquerda != NULL && tipo(no->esquerda) != SIMBOLO_TIPO_INTEIRO)
-    erro_operacao_tipo("esquerda", no->esquerda, operacao, SIMBOLO_TIPO_INTEIRO);
-  if (no->direita != NULL && tipo(no->direita) != SIMBOLO_TIPO_INTEIRO)
-    erro_operacao_tipo("direita", no->direita, operacao, SIMBOLO_TIPO_INTEIRO);
+  if (no->esquerda != NULL && tipo_simbolo(no->esquerda) != SIMBOLO_TIPO_BOOLEANO)
+    erro_operacao_tipo("esquerda", no->esquerda, operacao, SIMBOLO_TIPO_BOOLEANO);
+  if (no->direita != NULL && tipo_simbolo(no->direita) != SIMBOLO_TIPO_BOOLEANO)
+    erro_operacao_tipo("direita", no->direita, operacao, SIMBOLO_TIPO_BOOLEANO);
+
+  return SIMBOLO_TIPO_BOOLEANO;
 }
 
-static void verificar_operacao_string_e_inteiros(NoExpressaoAST * no) {
+static SimboloTipo verificar_operacao_inteiros(NoExpressaoAST * no) {
+  if (no->operacao != SUBTRACAO
+   && no->operacao != MULTIPLICACAO
+   && no->operacao != DIVISAO)
+    return SIMBOLO_TIPO_NULL;
+
+  char * operacao = (char *) OperacaoExpressaoDescricao[no->operacao];
+
+  if (no->esquerda != NULL && tipo_simbolo(no->esquerda) != SIMBOLO_TIPO_INTEIRO)
+    erro_operacao_tipo("esquerda", no->esquerda, operacao, SIMBOLO_TIPO_INTEIRO);
+  if (no->direita != NULL && tipo_simbolo(no->direita) != SIMBOLO_TIPO_INTEIRO)
+    erro_operacao_tipo("direita", no->direita, operacao, SIMBOLO_TIPO_INTEIRO);
+
+  return SIMBOLO_TIPO_INTEIRO;
+}
+
+static SimboloTipo verificar_operacao_string_e_inteiros(NoExpressaoAST * no) {
   if (no->operacao != ADICAO)
-    return;
+    return SIMBOLO_TIPO_NULL;
 
-  SimboloTipo tipo_esquerda = tipo(no->esquerda);
-  SimboloTipo tipo_direita = tipo(no->direita);
+  return verificar_operacao_tipos_iguais(no, SIMBOLO_TIPO_INTEIRO, SIMBOLO_TIPO_STRING);
+}
 
-  if (tipo_esquerda == SIMBOLO_TIPO_INTEIRO && tipo_direita == SIMBOLO_TIPO_INTEIRO
-   || tipo_esquerda == SIMBOLO_TIPO_STRING  && tipo_direita == SIMBOLO_TIPO_STRING)
-   return;
+static SimboloTipo verificar_operacao_inteiros_e_booleanos(NoExpressaoAST * no) {
+  if (!is_operacao_relacional(no->operacao))
+    return SIMBOLO_TIPO_NULL;
+
+  return verificar_operacao_tipos_iguais(no, SIMBOLO_TIPO_INTEIRO, SIMBOLO_TIPO_BOOLEANO);
+}
+
+static SimboloTipo verificar_operacao_tipos_iguais(NoExpressaoAST * no, SimboloTipo tipo_aceito1, SimboloTipo tipo_aceito2) {
+  char * operacao = (char *) OperacaoExpressaoDescricao[no->operacao];
+
+  SimboloTipo tipo_esquerda = tipo_simbolo(no->esquerda);
+  SimboloTipo tipo_direita = tipo_simbolo(no->direita);
+
+  if (tipo_esquerda == tipo_aceito1 && tipo_direita == tipo_aceito1
+   || tipo_esquerda == tipo_aceito2 && tipo_direita == tipo_aceito2)
+   return tipo_esquerda;
 
   char * mensagem = mensagem_preparar(
     "Símbolos à esquerda e à direita da operação %s‘%s’%s devem ser ambos do tipo %s‘%s’%s ou %s‘%s’%s\n",
-    "\033[1;97m", "adição (+)", "\033[0m",
-    "\033[1;97m", SimboloTipoDescricao[SIMBOLO_TIPO_INTEIRO], "\033[0m",
-    "\033[1;97m", SimboloTipoDescricao[SIMBOLO_TIPO_STRING], "\033[0m"
+    "\033[1;97m", operacao, "\033[0m",
+    "\033[1;97m", SimboloTipoDescricao[tipo_aceito1], "\033[0m",
+    "\033[1;97m", SimboloTipoDescricao[tipo_aceito2], "\033[0m"
   );
-
   mensagem_erro(yy_nome_arquivo, yylineno, 0, mensagem);
   free(mensagem);
-}
 
-static SimboloTipo tipo(NoAST * no) {
-  if (no->tipo == AST_TIPO_EXPRESSAO) {
-    NoExpressaoAST * expressao = (NoExpressaoAST *) no->no;
-    return expressao->tipo;
+  mensagem = mensagem_preparar(
+    " - Símbolos à esquerda: %s‘%s’%s \n",
+    "\033[1;97m", SimboloTipoDescricao[tipo_esquerda], "\033[0m"
+  );
+  mensagem_nota(yy_nome_arquivo, yylineno, 0, mensagem);
+  free(mensagem);
 
-  } else if (no->tipo == AST_TIPO_CONSTANTE) {
-    NoConstanteAST * constante = (NoConstanteAST *) no->no;
-    return constante->tipo;
+  mensagem = mensagem_preparar(
+    " - Símbolos à direita: %s‘%s’%s \n",
+    "\033[1;97m", SimboloTipoDescricao[tipo_direita], "\033[0m"
+  );
+  mensagem_nota(yy_nome_arquivo, yylineno, 0, mensagem);
+  free(mensagem);
 
-  } else {
-    NoVariavelAST * no_variavel = (NoVariavelAST *) no->no;
-    return no_variavel->valor->tipo;
-  }
+  return SIMBOLO_TIPO_NULL;
 }

@@ -21,7 +21,7 @@ typedef struct Simbolo {
   int id;
   char nome[32];
   SimboloTipo tipo;
-  Boolean atribuido;
+  Boolean declarado;
 
   union {
     int integer;

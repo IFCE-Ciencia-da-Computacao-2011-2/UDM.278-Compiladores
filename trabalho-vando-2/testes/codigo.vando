@@ -8,6 +8,11 @@ begin
     read semestre;
     write semestre;
     semestre := 2 + 5 - 3;
+    semestre := 2 + 5 - bola;
+
+    do cidade := "casa" to 100 - 3 begin
+      semestre := 2 + 3;
+    end
 
     if cursando begin
       write semestre;
@@ -18,7 +23,7 @@ begin
         semestre := 5 - 4;
       end
     else
-      do idade := 1 + 2 to 100 - 3 begin
+      do idade := "casa" to 100 - 3 begin
         semestre := 2 + 3;
       end
     end

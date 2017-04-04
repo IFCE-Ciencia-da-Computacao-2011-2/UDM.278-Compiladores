@@ -68,7 +68,7 @@ static Simbolo * tabela_malloc(char * nome_variavel) {
 static Simbolo * tabela_new(Simbolo * simbolo, unsigned int id, char * nome_variavel) {
   simbolo->id = total_simbolos;
   strcpy(simbolo->nome, nome_variavel);
-  simbolo->atribuido = 0;
+  simbolo->declarado = FALSE;
   simbolo->tipo = 0;
 
   return simbolo;
