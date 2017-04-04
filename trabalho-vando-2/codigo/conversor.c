@@ -59,7 +59,7 @@ static void imprimir_linha_declaracao(ListaEncadeada * linha_declaracao) {
 
   Simbolo * simbolo = (Simbolo *) elemento->valor;
 
-  printf("    %s %s", SimboloTipoDescricao[simbolo->tipo], simbolo->nome);
+  printf("    %s %s", SimboloTipoDescricaoC[simbolo->tipo], simbolo->nome);
 
   while (elemento->proximo != NULL) {
     elemento = (ListaElemento *) elemento->proximo;
@@ -188,7 +188,7 @@ static void imprimir_expressao(NoExpressaoAST * no_expressao) {
   //  imprimir_no_ast(no_expressao->esquerda)
 
   if (is_operacao_aritmetica(no_expressao->operacao))
-    printf(" %c ", no_expressao->operacao);
+    printf(" %s ", OperacaoExpressaoDescricao[no_expressao->operacao]);
 
   //if (no_expressao->direita != NULL)
   //  imprimir_no_ast(no_expressao->direita)

@@ -29,40 +29,38 @@ typedef enum {
 
     AST_TIPO_EXPRESSAO,
     AST_TIPO_CONSTANTE,
-
-    AST_TIPO_NULL // A linguagem não aceita null.
+    AST_TIPO_VARIAVEL
 } NoTipoAST;
 
 
 typedef enum {
-    CONSTANTE = 'c',
-    VARIAVEL = 'v',
+    CONSTANTE,
+    VARIAVEL,
 
-    ADICAO = '+',
-    SUBTRACAO = '-',
-    MULTIPLICACAO = '*',
-    DIVISAO = '/',
-    
-    OR,
-    AND,
-    NOT,
-    
-    IGUAL,
-    DIFERENTE,
+    ADICAO,
+    SUBTRACAO,
+    MULTIPLICACAO,
+    DIVISAO,
+
+    MAIOR_QUE,
+    MAIOR_IGUAL_QUE,
     MENOR_QUE,
     MENOR_IGUAL_QUE,
-    MAIOR_QUE,
-    MAIOR_IGUAL_QUE
-    
-    // ()
-    // - expressão
+    IGUAL,
+    DIFERENTE,
+
+    OR,
+    AND,
+    NOT
 } OperacaoExpressao;
 
-extern void is_operacao_aritmetica(OperacaoExpressao operacao);
+extern const char * OperacaoExpressaoDescricao[];
 
-extern void is_operacao_logica(OperacaoExpressao operacao);
+extern int is_operacao_aritmetica(OperacaoExpressao operacao);
 
-extern void is_operacao_relacional(OperacaoExpressao operacao);
+extern int is_operacao_logica(OperacaoExpressao operacao);
+
+extern int is_operacao_relacional(OperacaoExpressao operacao);
 
 /************************************************************
  * Estruturas de dados
@@ -78,13 +76,6 @@ typedef struct {
 
   // O tipo do nó encapsulado
   NoTipoAST tipo;
-  // ?
-  SimboloTipo simbolo_tipo;
-
-  // ?
-  char * identificador;
-  // ?
-  char * pai_identificador;
 } NoAST;
 
 /**
@@ -167,6 +158,9 @@ typedef struct {
   OperacaoExpressao operacao;
   NoAST * esquerda;
   NoAST * direita;
+
+  // Tipo de expressão
+  SimboloTipo tipo;
 } NoExpressaoAST;
 
 
@@ -178,8 +172,12 @@ typedef struct {
  */
 typedef struct {
   void * valor;
-  SimboloTipo tipo_constante;
+  SimboloTipo tipo;
 } NoConstanteAST;
+
+typedef struct {
+  Simbolo * valor;
+} NoVariavelAST;
 
 /************************************************************
  * Métodos

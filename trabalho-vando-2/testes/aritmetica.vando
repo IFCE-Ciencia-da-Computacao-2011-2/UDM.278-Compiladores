@@ -1,0 +1,5 @@
+var
+    int : idade
+begin
+    idade := 2 + 3;
+end

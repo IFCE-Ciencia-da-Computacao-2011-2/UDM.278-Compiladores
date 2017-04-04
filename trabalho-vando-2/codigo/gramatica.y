@@ -88,6 +88,7 @@ extern void yyerror(char *s, ...);
 %type<lista> lista_comandos
 %type<no> comando
 %type<no> expressao
+%type<no> expressao_valida expressao_booleana expressao_inteira
 %type<no> constante constante_int constante_bool
 
 %type<string_value> t_constante_string
@@ -134,28 +135,32 @@ lista_comandos: lista_comandos comando { $$ = lista_concatenar($1, new_lista_enc
               | comando { $$ = new_lista_encadeada($1); }
 ;
 
-comando: t_do t_variavel ':' '=' expressao t_to expressao t_begin
+comando: t_do t_variavel ':' '=' expressao_inteira t_to expressao_inteira t_begin
            lista_comandos
          t_end { $$ = no_new_repeticao_for($2, $5, $7, $9); }
-       | t_if expressao t_begin
+       | t_if expressao_booleana t_begin
            lista_comandos
          t_end { $$ = no_new_if_else($2, $4, NULL); }
-       | t_if expressao t_begin
+       | t_if expressao_booleana t_begin
            lista_comandos
          t_else
            lista_comandos
          t_end { $$ = no_new_if_else($2, $4, $6); }
-       | t_while expressao t_begin
+       | t_while expressao_booleana t_begin
            lista_comandos
          t_end { $$ = no_new_repeticao_while($2, $4); }
        | t_read t_variavel ';' { $$ = no_new_input($2); }
        | t_write expressao ';' { $$ = no_new_print($2); }
-       | t_variavel ':' '=' expressao ';' { $$ = no_new_atribuicao($1, $4); }
+       | t_variavel ':' '=' expressao_valida ';' { $$ = no_new_atribuicao($1, $4); }
 ;
 
 /******************************
  * Expressões
  ******************************/
+expressao_valida:   expressao { $$ = $1; /*logica_check_expressao_valida($1);*/  };
+expressao_booleana: expressao { $$ = $1; /*logica_check_expressao_booleana($1);*/ };
+expressao_inteira:  expressao { $$ = $1; /*logica_check_expressao_aritmetica($1->no);*/ };
+
 expressao: expressao '+' expressao { $$ = no_new_expressao($1, ADICAO, $3); }
          | expressao '-' expressao { $$ = no_new_expressao($1, SUBTRACAO, $3); }
          /*| expressao '*' expressao
