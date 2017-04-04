@@ -41,9 +41,28 @@ typedef enum {
     ADICAO = '+',
     SUBTRACAO = '-',
     MULTIPLICACAO = '*',
-    DIVISAO = '/'
+    DIVISAO = '/',
+    
+    OR,
+    AND,
+    NOT,
+    
+    IGUAL,
+    DIFERENTE,
+    MENOR_QUE,
+    MENOR_IGUAL_QUE,
+    MAIOR_QUE,
+    MAIOR_IGUAL_QUE
+    
+    // ()
+    // - expressão
 } OperacaoExpressao;
 
+extern void is_operacao_aritmetica(OperacaoExpressao operacao);
+
+extern void is_operacao_logica(OperacaoExpressao operacao);
+
+extern void is_operacao_relacional(OperacaoExpressao operacao);
 
 /************************************************************
  * Estruturas de dados

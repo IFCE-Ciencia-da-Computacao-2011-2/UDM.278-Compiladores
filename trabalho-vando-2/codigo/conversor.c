@@ -187,10 +187,7 @@ static void imprimir_expressao(NoExpressaoAST * no_expressao) {
   //if (no_expressao->esquerda != NULL)
   //  imprimir_no_ast(no_expressao->esquerda)
 
-  if (no_expressao->operacao == ADICAO
-   || no_expressao->operacao == SUBTRACAO
-   || no_expressao->operacao == MULTIPLICACAO
-   || no_expressao->operacao == DIVISAO)
+  if (is_operacao_aritmetica(no_expressao->operacao))
     printf(" %c ", no_expressao->operacao);
 
   //if (no_expressao->direita != NULL)

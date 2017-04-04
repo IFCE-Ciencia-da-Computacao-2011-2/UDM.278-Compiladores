@@ -5,6 +5,34 @@
 #include "common.h"
 #include "mensagem.h"
 
+/***********************************
+ * Operadores
+ ***********************************/
+void is_operacao_aritmetica(OperacaoExpressao operacao) {
+   return operacao == ADICAO
+       || operacao == SUBTRACAO
+       || operacao == MULTIPLICACAO
+       || operacao == DIVISAO;
+}
+
+void is_operacao_logica(OperacaoExpressao operacao) {
+   return operacao == OR
+       || operacao == AND
+       || operacao == NOT;
+}
+
+void is_operacao_relacional(OperacaoExpressao operacao) {
+   return operacao == IGUAL
+       || operacao == DIFERENTE
+       || operacao == MENOR_QUE
+       || operacao == MENOR_IGUAL_QUE
+       || operacao == MAIOR_QUE
+       || operacao == MAIOR_IGUAL_QUE;
+}
+
+/***********************************
+ * Nós
+ ***********************************/
 /**
  * @return NoAST default, com todos os valores NULL
  */

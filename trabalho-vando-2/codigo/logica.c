@@ -32,3 +32,45 @@ static void logica_declarar_variavel(Simbolo * simbolo, SimboloTipo tipo) {
   mensagem_erro(yy_nome_arquivo, yylineno, 0, mensagem);
   free(mensagem);
 }
+
+void logica_expressao_valida(NoAST * no) {
+  NoExpressaoAST * no_expressao = (NoExpressaoAST *) no->no;
+  
+  if (is_operacao_aritmetica(no_expressao->operacao)) {
+    check_expressao_aritmetica(no_expressao);
+  
+  } else if (is_operacao_logica(no_expressao->operacao)) {
+    check_expressao_logica(no_expressao);
+
+  } else if (is_operacao_relacional(no_expressao->operacao)) {
+    check_expressao_relacional(no_expressao);
+  //} else if (no_expressao->operacao == "()") {
+      
+  } else {
+    printf("Não sei tratar expressão \"%c\"", no_expressao->operacao);
+    exit(1);
+  }
+}
+
+void check_expressao_aritmetica(NoExpressaoAST * no_expressao) {
+  if (no_expressao->operacao == ADICAO,
+   || no_expressao->operacao == SUBTRACAO,
+   || no_expressao->operacao == MULTIPLICACAO,
+   || no_expressao->operacao == DIVISAO) {
+    check_expressao_aritmetica(no_expressao->no_esquerda);
+    check_expressao_aritmetica(no_expressao->no_direita);
+  }/* else if (no_expressao->operacao == "- exp") {
+    
+  }*/ else {
+    printf("??????");
+    exit(1);
+  }
+}
+
+void check_expressao_logica(NoExpressaoAST * no_expressao) {
+    
+}
+
+void check_expressao_relacional(NoExpressaoAST * no_expressao) {
+  
+}
