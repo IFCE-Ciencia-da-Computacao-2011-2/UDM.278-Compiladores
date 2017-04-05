@@ -26,12 +26,19 @@ STRING      L?\"(\\.|[^\\"])*\"
 
 [[:space:]]
 
-[,:;=+\-*/()]	return *yytext;
+[,:;=+\-*/()><]	return *yytext;
 
 int    return t_int;
 bool   return t_bool;
 string return t_string;
 
+and return t_bool_and;
+or  return t_bool_or;
+not return t_bool_not;
+\<= return t_operacao_menor_igual;
+\>= return t_operacao_maior_igual;
+==  return t_comparacao_igual;
+!=  return t_comparacao_diferente;
 
 var    return t_var;
 begin  return t_begin;
@@ -69,9 +76,12 @@ else   return t_else;
 
   if (string_vazia)
     yytext[1] = '\0';
-  else
-    for (int i=0; i<(size-1); i++)
+  else {
+    int i;
+    for (i=0; i<(size-1); i++) {
       yytext[i] = yytext[i+1];
+    }
+  }
 
   yytext[size-2] = '\0';
 

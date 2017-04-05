@@ -28,6 +28,10 @@ static void imprimir_cabecalho() {
   printf("\n");
 
   printf("#include <stdio.h>\n");
+  printf("#include <stdbool.h>\n");
+
+  printf("\n");
+  printf("#include \"base.h\"\n");
 }
 
 
@@ -162,11 +166,18 @@ static void imprimir_atribuicao(NoAtribuicaoAST * no_atribuicao) {
 }
 
 static void imprimir_print(NoPrintAST * no_print) {
-  printf("    printf();\n");
+  printf("    printf([WRITE]);\n");
 }
 
 static void imprimir_input(NoInputAST * no_input) {
-  printf("    [INPUT];\n");
+  Simbolo * variavel = no_input->variavel;
+
+  if (variavel->tipo == SIMBOLO_TIPO_INTEIRO)
+    printf("    %s = read_int();\n", variavel->nome);
+  else if (variavel->tipo == SIMBOLO_TIPO_BOOLEANO)
+    printf("    %s = read_bool();\n", variavel->nome);
+  else
+    printf("    %s = read_string();\n", variavel->nome);
 }
 
 static void imprimir_if_else(NoIfElseAST * no_condicional) {

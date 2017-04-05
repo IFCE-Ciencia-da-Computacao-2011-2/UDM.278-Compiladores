@@ -4,27 +4,28 @@ var
     bool : cursando
 begin
     msg := "digite um número";
-    msg := "";
+    write semestre + " - 2015";
+    read msg;
     read semestre;
     write semestre;
     semestre := 2 + 5 - 3;
     semestre := 2 + 5 - bola;
 
     do cidade := "casa" to 100 - 3 begin
-      semestre := 2 + 3;
+        semestre := 2 + 3;
     end
 
     if cursando begin
-      write semestre;
+        write semestre;
     end
 
     if 2 - 2 begin
-      while cursando begin
-        semestre := 5 - 4;
-      end
+        while cursando begin
+          semestre := 5 - 4;
+        end
     else
-      do idade := "casa" to 100 - 3 begin
-        semestre := 2 + 3;
-      end
+        do idade := "casa" to 100 - 3 begin
+          semestre := 2 + 3;
+        end
     end
 end

@@ -43,6 +43,7 @@ char * concatenate(char * a, char * b) {
 }
 
 // gcc -o teste base.c && ./teste
+/*
 int main() {
   printf("Nome: ");
   char * nome = read_string();
@@ -64,3 +65,4 @@ int main() {
   printf("Maior de idade: \n");
   printf(" - %s \n", maior_idade ? "Sim" : "Não");
 }
+*/

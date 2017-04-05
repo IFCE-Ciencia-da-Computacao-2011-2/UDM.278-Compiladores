@@ -1,5 +1,15 @@
 # Testar
 
 ```bash
+sh make.sh
 cat testes/codigo.vando | ./vando
+```
+
+# Gerar arquivo
+
+```bash
+sh make.sh
+cat testes/codigo.vando | ./vando > resultado/codigo.c
+gcc -o resultado/resultado resultado/codigo.c resultado/base.c
+./resultado/resultado
 ```

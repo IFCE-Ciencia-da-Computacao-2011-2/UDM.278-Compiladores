@@ -71,12 +71,12 @@ extern void yyerror(char *s, ...);
 // Prioridades
 // Vertical: Último é mais prioritário que o primeiro
 // Horizontal: Direita mais prioritário que esquerda
-//%left t_bool_and t_bool_or
-//%left t_comparacao_igual t_comparacao_diferente
-//%left t_comparacao_menor t_comparacao_menor_igual t_operacao_maior t_operacao_maior_igual
+%left t_bool_and t_bool_or
+%left t_comparacao_igual t_comparacao_diferente
+%left '<' t_operacao_menor_igual '>' t_operacao_maior_igual
 %left '+' '-'
-//%left t_multiplicacao t_divisao t_resto  // Verificar prioridade
-//%left t_bool_not
+%left '*' '/'
+%left t_bool_not
 
 
 // Tokens da gramática: Elementos não terminais
@@ -93,6 +93,7 @@ extern void yyerror(char *s, ...);
 
 %type<simbolo> variavel_declarada
 %type<string_value> t_constante_string
+%type<int_value> t_constante_int
 
 /************************************************************/
 %%
@@ -165,21 +166,18 @@ expressao_inteira:  expressao { $$ = $1; logica_verificar_expressao_inteira((NoE
 
 expressao: expressao '+' expressao { $$ = no_new_expressao($1, ADICAO, $3); }
          | expressao '-' expressao { $$ = no_new_expressao($1, SUBTRACAO, $3); }
-         /*| expressao '*' expressao
-           | expressao '/' expressao
-           | '-' expressao
-           | expressao  boolean_or expressao
-           | expressao boolean_and expressao
-           | boolean_not expressao
-           | expressao  boolean_igual expressao
-           | expressao  boolean_diferente expressao
-           | expressao  boolean_maior expressao
-           | expressao  boolean_menor expressao
-           | expressao  boolean_menor_igual expressao
-           | expressao  boolean_maior_igual expressao
-           | '(' expressao ')'*/
+         | '-' expressao           { $$ = no_new_expressao(NULL, SUBTRACAO, $2); }
+         | expressao t_bool_or  expressao   { $$ = no_new_expressao($1,   OR,  $3); }
+         | expressao t_bool_and expressao   { $$ = no_new_expressao($1,   AND, $3); }
+         | t_bool_not expressao             { $$ = no_new_expressao(NULL, NOT, $2); }
+         | expressao t_comparacao_igual expressao     { $$ = no_new_expressao($1, IGUAL, $3); }
+         | expressao t_comparacao_diferente expressao { $$ = no_new_expressao($1, DIFERENTE, $3); }
+         | expressao '>' expressao                    { $$ = no_new_expressao($1, MAIOR_QUE, $3); }
+         | expressao '<' expressao                    { $$ = no_new_expressao($1, MENOR_QUE, $3); }
+         | expressao t_operacao_menor_igual expressao { $$ = no_new_expressao($1, MENOR_IGUAL_QUE, $3); }
+         | expressao t_operacao_maior_igual expressao { $$ = no_new_expressao($1, MAIOR_IGUAL_QUE, $3); }
+         //| '(' expressao ')'                        { $$ = no_new_expressao($1, NULL, $3); }
          | constante { $$ = no_new_expressao($1, CONSTANTE, NULL); }
-         // FIXME VERIFICAR VARIÁVEIL JÁ DECLARADA
          | t_variavel { $$ = no_new_expressao(no_new_variavel($1), VARIAVEL, NULL); logica_verificar_variavel_declarada($1); }
 ;
 
@@ -188,7 +186,7 @@ constante: constante_int { $$ = $1; }
          | t_constante_string { $$ = no_new_constante_referencia($1, SIMBOLO_TIPO_STRING); }
 ;
 
-constante_int: t_constante_int { $$ = no_new_constante(0, SIMBOLO_TIPO_INTEIRO); }
+constante_int: t_constante_int { $$ = no_new_constante($1, SIMBOLO_TIPO_INTEIRO); }
 
 constante_bool: t_constante_bool_true  { $$ = no_new_constante(TRUE, SIMBOLO_TIPO_BOOLEANO); }
               | t_constante_bool_false { $$ = no_new_constante(FALSE, SIMBOLO_TIPO_BOOLEANO); }
@@ -203,8 +201,8 @@ fim_codigo: t_eof { /*ast_imprimir($$);*/ }
 %%
 
 int main() {
-  printf("Vando 1.0.0 (64-bit)\n");
-  printf("[GCC %d.%d.%d] on linux\n", __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
+  printf("// Vando 1.0.0 (64-bit)\n");
+  printf("// [GCC %d.%d.%d] on linux\n", __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
 
   return yyparse();
 }
