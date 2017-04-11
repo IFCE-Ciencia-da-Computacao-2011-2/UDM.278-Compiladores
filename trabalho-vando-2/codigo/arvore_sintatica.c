@@ -203,9 +203,9 @@ static SimboloTipo verificar_tipos_elementos(NoExpressaoAST * no);
 static SimboloTipo verificar_operacao_booleanos(NoExpressaoAST * no);
 static SimboloTipo verificar_operacao_inteiros(NoExpressaoAST * no);
 static SimboloTipo verificar_operacao_string_e_inteiros(NoExpressaoAST * no);
-static SimboloTipo verificar_operacao_inteiros_e_booleanos(NoExpressaoAST * no);
+static SimboloTipo verificar_operacao_relacional(NoExpressaoAST * no);
 
-static SimboloTipo verificar_operacao_tipos_iguais(NoExpressaoAST * no, SimboloTipo tipo_aceito1, SimboloTipo tipo_aceito2);
+static Boolean verificar_operacao_tipos_iguais(NoExpressaoAST * no, SimboloTipo tipo_aceito1, SimboloTipo tipo_aceito2);
 
 NoAST * no_new_expressao(NoAST * no_esquerda, OperacaoExpressao operacao, NoAST * no_direita) {
   NoExpressaoAST * no = calloc(1, sizeof(NoExpressaoAST));
@@ -238,7 +238,7 @@ static SimboloTipo verificar_tipos_elementos(NoExpressaoAST * no) {
   if (tipo != SIMBOLO_TIPO_NULL)
     return tipo;
 
-  tipo = verificar_operacao_inteiros_e_booleanos(no);
+  tipo = verificar_operacao_relacional(no);
   if (tipo != SIMBOLO_TIPO_NULL)
     return tipo;
 
@@ -282,17 +282,23 @@ static SimboloTipo verificar_operacao_string_e_inteiros(NoExpressaoAST * no) {
   if (no->operacao != ADICAO)
     return SIMBOLO_TIPO_NULL;
 
-  return verificar_operacao_tipos_iguais(no, SIMBOLO_TIPO_INTEIRO, SIMBOLO_TIPO_STRING);
+  if (!verificar_operacao_tipos_iguais(no, SIMBOLO_TIPO_STRING, SIMBOLO_TIPO_INTEIRO))
+    return SIMBOLO_TIPO_NULL;
+
+  return tipo_simbolo(no->esquerda);
 }
 
-static SimboloTipo verificar_operacao_inteiros_e_booleanos(NoExpressaoAST * no) {
+static SimboloTipo verificar_operacao_relacional(NoExpressaoAST * no) {
   if (!is_operacao_relacional(no->operacao))
     return SIMBOLO_TIPO_NULL;
 
-  return verificar_operacao_tipos_iguais(no, SIMBOLO_TIPO_INTEIRO, SIMBOLO_TIPO_BOOLEANO);
+  if (!verificar_operacao_tipos_iguais(no, SIMBOLO_TIPO_INTEIRO, SIMBOLO_TIPO_BOOLEANO))
+    return SIMBOLO_TIPO_NULL;
+
+  return SIMBOLO_TIPO_BOOLEANO;
 }
 
-static SimboloTipo verificar_operacao_tipos_iguais(NoExpressaoAST * no, SimboloTipo tipo_aceito1, SimboloTipo tipo_aceito2) {
+static Boolean verificar_operacao_tipos_iguais(NoExpressaoAST * no, SimboloTipo tipo_aceito1, SimboloTipo tipo_aceito2) {
   char * operacao = (char *) OperacaoExpressaoDescricao[no->operacao];
 
   SimboloTipo tipo_esquerda = tipo_simbolo(no->esquerda);
@@ -300,7 +306,7 @@ static SimboloTipo verificar_operacao_tipos_iguais(NoExpressaoAST * no, SimboloT
 
   if (tipo_esquerda == tipo_aceito1 && tipo_direita == tipo_aceito1
    || tipo_esquerda == tipo_aceito2 && tipo_direita == tipo_aceito2)
-   return tipo_esquerda;
+   return TRUE;
 
   char * mensagem = mensagem_preparar(
     "Símbolos à esquerda e à direita da operação %s‘%s’%s devem ser ambos do tipo %s‘%s’%s ou %s‘%s’%s\n",
@@ -325,5 +331,5 @@ static SimboloTipo verificar_operacao_tipos_iguais(NoExpressaoAST * no, SimboloT
   mensagem_nota(yy_nome_arquivo, yylineno, 0, mensagem);
   free(mensagem);
 
-  return SIMBOLO_TIPO_NULL;
+  return FALSE;
 }

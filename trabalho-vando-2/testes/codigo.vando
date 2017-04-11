@@ -1,12 +1,59 @@
 var
-    string : nome, curso, campus
-    int : idade, semestre, ira
-    bool : cursando
+  string : nome
+  int : n1, n2
+  int : media
+  int : max_fibo
+
+  bool : love
 
 begin
+  write "Nome: ";
+  read nome;
 
-  cursando := (true >= false);
-  nome := "Paulo";
-  nome := nome + (" " + "Mateus");
-  write nome + "\n";
+  write "Nota na N1: ";
+  read n1;
+  write "Nota na N2: ";
+  read n2;
+
+  media := (n1 * 2 + n2 * 3) / 5;
+
+  write "\n";
+  write "Média: ";
+  write media;
+  write "\n";
+
+  write nome + ",\n";
+
+  if media >= 7
+    write "você passou de semestre!\n";
+  else
+    if media >= 5
+      write "você passaria por conceito B\n";
+    else
+      write "você está em uma situação delicada\n";
+    end
+  end
+
+  write "\n";
+  write "A média é um número ";
+
+  if media / 2 * 2 == media
+    write "par\n";
+  else
+    write "ímpar\n";
+  end
+
+  write "\n";
+  write "Fibo até: ";
+  read max_fibo;
+
+  write "\n";
+  write "Você gosta de mim (true/false)? ";
+  read love;
+
+  if love
+    write "Cê tá confundindo as parada\n";
+  else
+    write "Aié?! Eu vou te reprovar!\n";
+  end
 end

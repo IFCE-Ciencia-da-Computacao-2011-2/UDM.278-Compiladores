@@ -140,17 +140,17 @@ lista_comandos: lista_comandos comando { $$ = lista_concatenar($1, new_lista_enc
 comando: t_do variavel_declarada ':' '=' expressao_inteira t_to expressao_inteira t_begin
            lista_comandos
          t_end { $$ = no_new_repeticao_for($2, $5, $7, $9); }
-       | t_if expressao_booleana t_begin
+       | t_if expressao_booleana
            lista_comandos
-         t_end { $$ = no_new_if_else($2, $4, NULL); }
-       | t_if expressao_booleana t_begin
+         t_end { $$ = no_new_if_else($2, $3, NULL); }
+       | t_if expressao_booleana
            lista_comandos
          t_else
            lista_comandos
-         t_end { $$ = no_new_if_else($2, $4, $6); }
-       | t_while expressao_booleana t_begin
+         t_end { $$ = no_new_if_else($2, $3, $5); }
+       | t_while expressao_booleana
            lista_comandos
-         t_end { $$ = no_new_repeticao_while($2, $4); }
+         t_end { $$ = no_new_repeticao_while($2, $3); }
        | t_read variavel_declarada ';' { $$ = no_new_input($2); }
        | t_write expressao ';' { $$ = no_new_print($2); }
        | variavel_declarada ':' '=' expressao ';' { $$ = logica_atribuicao_variavel($1, $4); }
@@ -166,6 +166,8 @@ expressao_inteira:  expressao { $$ = $1; logica_verificar_expressao_inteira((NoE
 
 expressao: expressao '+' expressao { $$ = no_new_expressao($1, ADICAO, $3); }
          | expressao '-' expressao { $$ = no_new_expressao($1, SUBTRACAO, $3); }
+         | expressao '*' expressao { $$ = no_new_expressao($1, MULTIPLICACAO, $3); }
+         | expressao '/' expressao { $$ = no_new_expressao($1, DIVISAO, $3); }
          | '-' expressao           { $$ = no_new_expressao(NULL, SUBTRACAO, $2); }
          | expressao t_bool_or  expressao   { $$ = no_new_expressao($1,   OR,  $3); }
          | expressao t_bool_and expressao   { $$ = no_new_expressao($1,   AND, $3); }
@@ -176,7 +178,7 @@ expressao: expressao '+' expressao { $$ = no_new_expressao($1, ADICAO, $3); }
          | expressao '<' expressao                    { $$ = no_new_expressao($1, MENOR_QUE, $3); }
          | expressao t_operacao_menor_igual expressao { $$ = no_new_expressao($1, MENOR_IGUAL_QUE, $3); }
          | expressao t_operacao_maior_igual expressao { $$ = no_new_expressao($1, MAIOR_IGUAL_QUE, $3); }
-         | '(' expressao ')'                        { $$ = no_new_expressao($2, ENTRE_PARENTESES, NULL); }
+         | '(' expressao ')'                          { $$ = no_new_expressao($2, ENTRE_PARENTESES, NULL); }
          | constante { $$ = no_new_expressao($1, CONSTANTE, NULL); }
          | t_variavel { $$ = no_new_expressao(no_new_variavel($1), VARIAVEL, NULL); logica_verificar_variavel_declarada($1); }
 ;

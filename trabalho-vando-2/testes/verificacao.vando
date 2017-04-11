@@ -1,0 +1,31 @@
+var
+  bool : a
+
+begin
+  a := true;
+  a := false;
+
+  a := true and true;
+  a := true or true;
+  a := not true;
+
+  a := true != false;
+  a := true == false;
+
+  a := true > false;
+  a := true < false;
+
+  a := 2 > 3;
+  a := 2 < 3;
+  a := 2 != 3;
+  a := 2 == 3;
+  a := 2 >= 3;
+  a := 2 <= 3;
+
+  a := "" == "";
+  a := "" != "";
+  a := "" < "";
+  a := "" > "";
+  a := "" <= "";
+  a := "" >= "";
+end
