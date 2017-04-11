@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "arvore_sintatica.h"
 #include "common.h"
@@ -8,31 +9,33 @@
 /***********************************
  * Operadores
  ***********************************/
-const char * OperacaoExpressaoDescricao[] = {
-  "constante", "variavel",
+ const char * OperacaoExpressaoDescricao[] = {
+   "constante", "variavel",
 
-  "+", "-", "*", "/",
+   "+", "-", "*", "/",
 
-  ">", ">=", "<", "<=",
-  "==", "!=",
+   ">", ">=", "<", "<=",
+   "==", "!=",
 
-  "||", "&&", "!"
-};
+   "||", "&&", "!",
 
-int is_operacao_aritmetica(OperacaoExpressao operacao) {
+   "PARENTESES"
+ };
+
+Boolean is_operacao_aritmetica(OperacaoExpressao operacao) {
    return operacao == ADICAO
        || operacao == SUBTRACAO
        || operacao == MULTIPLICACAO
        || operacao == DIVISAO;
 }
 
-int is_operacao_logica(OperacaoExpressao operacao) {
+Boolean is_operacao_logica(OperacaoExpressao operacao) {
    return operacao == OR
        || operacao == AND
        || operacao == NOT;
 }
 
-int is_operacao_relacional(OperacaoExpressao operacao) {
+Boolean is_operacao_relacional(OperacaoExpressao operacao) {
    return operacao == IGUAL
        || operacao == DIFERENTE
        || operacao == MENOR_QUE
@@ -41,7 +44,12 @@ int is_operacao_relacional(OperacaoExpressao operacao) {
        || operacao == MAIOR_IGUAL_QUE;
 }
 
-static SimboloTipo tipo_simbolo(NoAST * no) {
+Boolean is_operacao_folha(OperacaoExpressao operacao) {
+  return operacao == CONSTANTE
+      || operacao == VARIAVEL;
+}
+
+SimboloTipo tipo_simbolo(NoAST * no) {
   if (no->tipo == AST_TIPO_EXPRESSAO) {
     NoExpressaoAST * expressao = (NoExpressaoAST *) no->no;
     return expressao->tipo;
@@ -143,18 +151,24 @@ NoAST * no_new_if_else(NoAST * expressao, ListaEncadeada * comandos_if, ListaEnc
 NoAST * no_new_constante(int valor, SimboloTipo tipo) {
   NoConstanteAST * no = calloc(1, sizeof(NoConstanteAST));
 
-  no->valor.referencia = NULL;
   no->valor.inteiro = valor;
   no->tipo = tipo;
 
   return no_new(no, AST_TIPO_CONSTANTE);
 }
 
+NoAST * no_new_constante_string(char * valor) {
+  char * string = calloc(1, strlen(valor) + 1);
+
+  strcpy(string, valor);
+
+  return no_new_constante_referencia(string, SIMBOLO_TIPO_STRING);
+}
+
 NoAST * no_new_constante_referencia(void * valor, SimboloTipo tipo) {
   NoConstanteAST * no = calloc(1, sizeof(NoConstanteAST));
 
   no->valor.referencia = valor;
-  no->valor.inteiro = 0;
   no->tipo = tipo;
 
   return no_new(no, AST_TIPO_CONSTANTE);
@@ -208,6 +222,7 @@ NoAST * no_new_expressao(NoAST * no_esquerda, OperacaoExpressao operacao, NoAST 
   return no_new(no, AST_TIPO_EXPRESSAO);
 }
 
+
 static SimboloTipo verificar_tipos_elementos(NoExpressaoAST * no) {
   SimboloTipo tipo = SIMBOLO_TIPO_NULL;
 
@@ -226,6 +241,9 @@ static SimboloTipo verificar_tipos_elementos(NoExpressaoAST * no) {
   tipo = verificar_operacao_inteiros_e_booleanos(no);
   if (tipo != SIMBOLO_TIPO_NULL)
     return tipo;
+
+  if (no->operacao == ENTRE_PARENTESES)
+    return tipo_simbolo(no->esquerda);
 
   return SIMBOLO_TIPO_NULL;
 }

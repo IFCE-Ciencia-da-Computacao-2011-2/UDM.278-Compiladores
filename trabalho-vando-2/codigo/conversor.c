@@ -5,6 +5,7 @@ static void imprimir_cabecalho();
 static void imprimir_declaracao_variaveis(ListaEncadeada * declaracoes);
 static void imprimir_comandos(ListaEncadeada * comandos);
 
+
 /****************************
  * Cabeçalho
  ****************************/
@@ -85,12 +86,14 @@ static void imprimir_while(NoRepeticaoWhileAST * no_while);
 
 static void imprimir_atribuicao(NoAtribuicaoAST * no_atribuicao);
 
-static void imprimir_expressao(NoExpressaoAST * no_expressao);
-
 static void imprimir_print(NoPrintAST * no_print);
 static void imprimir_input(NoInputAST * no_input);
 
 static void imprimir_if_else(NoIfElseAST * no_condicional);
+
+static void imprimir_expressao(NoExpressaoAST * no_expressao);
+static void imprimir_variavel(NoVariavelAST * no_variavel);
+static void imprimir_constante(NoConstanteAST * no_constante);
 
 static void imprimir_comandos(ListaEncadeada * comandos) {
   ListaElemento * elemento = comandos->primeiro;
@@ -125,6 +128,12 @@ static void imprimir_no_ast(NoAST * no) {
 
   else if (no->tipo == AST_TIPO_EXPRESSAO)
     imprimir_expressao((NoExpressaoAST *) no->no);
+
+  else if (no->tipo == AST_TIPO_CONSTANTE)
+    imprimir_constante((NoConstanteAST *) no->no);
+
+  else if (no->tipo == AST_TIPO_VARIAVEL)
+    imprimir_variavel((NoVariavelAST *) no->no);
 }
 
 static void imprimir_for(NoRepeticaoForAST * no_for) {
@@ -166,7 +175,18 @@ static void imprimir_atribuicao(NoAtribuicaoAST * no_atribuicao) {
 }
 
 static void imprimir_print(NoPrintAST * no_print) {
-  printf("    printf([WRITE]);\n");
+  SimboloTipo tipo = tipo_simbolo(no_print->expressao);
+  printf("    printf(");
+
+  if (tipo == SIMBOLO_TIPO_INTEIRO
+   || tipo == SIMBOLO_TIPO_BOOLEANO)
+    printf("\"%%d\"");
+  else
+    printf("\"%%s\"");
+
+  printf(", ");
+  imprimir_no_ast(no_print->expressao);
+  printf(");\n");
 }
 
 static void imprimir_input(NoInputAST * no_input) {
@@ -194,13 +214,73 @@ static void imprimir_if_else(NoIfElseAST * no_condicional) {
 }
 
 static void imprimir_expressao(NoExpressaoAST * no_expressao) {
-  printf("Vou imprimir uma expressão");
-  //if (no_expressao->esquerda != NULL)
-  //  imprimir_no_ast(no_expressao->esquerda)
+  if (no_expressao->operacao == ENTRE_PARENTESES) {
+    printf("(");
+    imprimir_no_ast(no_expressao->esquerda);
+    printf(")");
 
-  if (is_operacao_aritmetica(no_expressao->operacao))
-    printf(" %s ", OperacaoExpressaoDescricao[no_expressao->operacao]);
+  } else if (no_expressao->operacao == ADICAO && tipo_simbolo(no_expressao->esquerda) == SIMBOLO_TIPO_STRING) {
+    printf("concatenate(");
+    imprimir_no_ast(no_expressao->esquerda);
+    printf(", ");
+    imprimir_no_ast(no_expressao->direita);
+    printf(")");
 
-  //if (no_expressao->direita != NULL)
-  //  imprimir_no_ast(no_expressao->direita)
+  } else {
+    if (no_expressao->esquerda != NULL)
+      imprimir_no_ast(no_expressao->esquerda);
+
+    if (!is_operacao_folha(no_expressao->operacao))
+      printf(" %s ", OperacaoExpressaoDescricao[no_expressao->operacao]);
+
+    if (no_expressao->direita != NULL)
+      imprimir_no_ast(no_expressao->direita);
+  }
 }
+
+static void imprimir_constante(NoConstanteAST * no_constante){
+  if (no_constante->tipo == SIMBOLO_TIPO_INTEIRO)
+    printf("%d", no_constante->valor.inteiro);
+
+  else if (no_constante->tipo == SIMBOLO_TIPO_BOOLEANO)
+    printf(no_constante->valor.inteiro ? "true" : "false");
+
+  else if (no_constante->tipo == SIMBOLO_TIPO_STRING)
+    printf("\"%s\"", (char *) no_constante->valor.referencia);
+}
+
+static void imprimir_variavel(NoVariavelAST * no_variavel){
+  printf("%s", no_variavel->valor->nome);
+  // fprintf(stderr, "balablallba");
+}
+//
+// if(is_atomo(no_expressao->esquerda)){
+//   if(no_expressao->esquerda->tipo == AST_TIPO_CONSTANTE){
+//     if(no_expressao->esquerda->tipo->tipo)
+//       printf(" %s ", no_expressao->esquerda-> );
+//   }
+// }
+
+
+// if ((NoAST *)  no_expressao->tipo != NULL){
+//   if(no_expressao->direita->tipo == AST_TIPO_CONSTANTE){
+//     imprimir_constante((NoAST *) no_expressao->direita->tipo);
+//   }
+//   if(no_expressao->esquerda->tipo == AST_TIPO_CONSTANTE){
+//     imprimir_constante((NoAST *) no_expressao->esquerda->tipo);
+//   }
+// }
+// //
+// //  imprimir_no_ast(no_expressao->esquerda)
+// //
+// // if (is_operacao_aritmetica(no_expressao->operacao))
+// //   printf(" %s ", OperacaoExpressaoDescricao[no_expressao->operacao]);
+//
+// //if (no_expressao->direita != NULL)
+// //  imprimir_no_ast(no_expressao->direita)
+
+
+// imprimir_constante(NoAST * no_constante){
+//   NoConstanteAST * constante = (NoConstanteAST *) no_constante->no;
+//   printf("%d\n", no_constante->tipo);
+// }

@@ -8,36 +8,12 @@
 #include "base.h"
 
 int main() {
-    char[] nome, curso, campus;
+    char * nome, curso, campus;
     int idade, semestre, ira;
     _Bool cursando;
 
-    msg = Vou imprimir uma expressão;
-    printf([WRITE]);
-    msg = read_int();
-    semestre = read_int();
-    printf([WRITE]);
-    semestre = Vou imprimir uma expressão - ;
-    semestre = Vou imprimir uma expressão - ;
-
-    for (cidade = Vou imprimir uma expressão; cidade < (Vou imprimir uma expressão - ); cidade++) {
-    semestre = Vou imprimir uma expressão + ;
-
-    }
-    if (Vou imprimir uma expressão) {
-    printf([WRITE]);
-    }
-    if (Vou imprimir uma expressão - ) {
-
-    while (Vou imprimir uma expressão) {
-    semestre = Vou imprimir uma expressão - ;
-
-    }
-    } else {
-
-    for (idade = Vou imprimir uma expressão; idade < (Vou imprimir uma expressão - ); idade++) {
-    semestre = Vou imprimir uma expressão + ;
-
-    }
-    }
+    cursando = (true >= false);
+    nome = "Paulo";
+    nome = concatenate(nome, (concatenate(" ", "Mateus")));
+    printf("%s", concatenate(nome, "\n"));
 }

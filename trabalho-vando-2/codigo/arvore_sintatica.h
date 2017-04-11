@@ -51,16 +51,20 @@ typedef enum {
 
     OR,
     AND,
-    NOT
+    NOT,
+
+    ENTRE_PARENTESES
 } OperacaoExpressao;
 
 extern const char * OperacaoExpressaoDescricao[];
 
-extern int is_operacao_aritmetica(OperacaoExpressao operacao);
+extern Boolean is_operacao_aritmetica(OperacaoExpressao operacao);
 
-extern int is_operacao_logica(OperacaoExpressao operacao);
+extern Boolean is_operacao_logica(OperacaoExpressao operacao);
 
-extern int is_operacao_relacional(OperacaoExpressao operacao);
+extern Boolean is_operacao_relacional(OperacaoExpressao operacao);
+
+extern Boolean is_operacao_folha(OperacaoExpressao operacao);
 
 /************************************************************
  * Estruturas de dados
@@ -186,6 +190,8 @@ typedef struct {
 /************************************************************
  * Métodos
  ************************************************************/
+extern SimboloTipo tipo_simbolo(NoAST * no);
+
 extern NoAST * no_new_raiz(ListaEncadeada * declaracoes, ListaEncadeada * comandos);
 
 extern NoAST * no_new_repeticao_for(Simbolo * variavel, NoAST * expressao_inicio, NoAST * expressao_fim, ListaEncadeada * comandos);
@@ -200,6 +206,7 @@ extern NoAST * no_new_input(Simbolo * variavel);
 extern NoAST * no_new_expressao(NoAST * no_esquerda, OperacaoExpressao operacao, NoAST * no_direita);
 
 extern NoAST * no_new_constante(int valor, SimboloTipo tipo);
+extern NoAST * no_new_constante_string(char * valor);
 extern NoAST * no_new_constante_referencia(void * valor, SimboloTipo tipo);
 extern NoAST * no_new_variavel(Simbolo * variavel);
 

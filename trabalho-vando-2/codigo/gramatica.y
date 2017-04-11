@@ -176,14 +176,14 @@ expressao: expressao '+' expressao { $$ = no_new_expressao($1, ADICAO, $3); }
          | expressao '<' expressao                    { $$ = no_new_expressao($1, MENOR_QUE, $3); }
          | expressao t_operacao_menor_igual expressao { $$ = no_new_expressao($1, MENOR_IGUAL_QUE, $3); }
          | expressao t_operacao_maior_igual expressao { $$ = no_new_expressao($1, MAIOR_IGUAL_QUE, $3); }
-         //| '(' expressao ')'                        { $$ = no_new_expressao($1, NULL, $3); }
+         | '(' expressao ')'                        { $$ = no_new_expressao($2, ENTRE_PARENTESES, NULL); }
          | constante { $$ = no_new_expressao($1, CONSTANTE, NULL); }
          | t_variavel { $$ = no_new_expressao(no_new_variavel($1), VARIAVEL, NULL); logica_verificar_variavel_declarada($1); }
 ;
 
 constante: constante_int { $$ = $1; }
          | constante_bool { $$ = $1; }
-         | t_constante_string { $$ = no_new_constante_referencia($1, SIMBOLO_TIPO_STRING); }
+         | t_constante_string { $$ = no_new_constante_string($1); }
 ;
 
 constante_int: t_constante_int { $$ = no_new_constante($1, SIMBOLO_TIPO_INTEIRO); }

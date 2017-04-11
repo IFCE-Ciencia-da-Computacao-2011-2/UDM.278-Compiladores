@@ -2,30 +2,11 @@ var
     string : nome, curso, campus
     int : idade, semestre, ira
     bool : cursando
+
 begin
-    msg := "digite um número";
-    write semestre + " - 2015";
-    read msg;
-    read semestre;
-    write semestre;
-    semestre := 2 + 5 - 3;
-    semestre := 2 + 5 - bola;
 
-    do cidade := "casa" to 100 - 3 begin
-        semestre := 2 + 3;
-    end
-
-    if cursando begin
-        write semestre;
-    end
-
-    if 2 - 2 begin
-        while cursando begin
-          semestre := 5 - 4;
-        end
-    else
-        do idade := "casa" to 100 - 3 begin
-          semestre := 2 + 3;
-        end
-    end
+  cursando := (true >= false);
+  nome := "Paulo";
+  nome := nome + (" " + "Mateus");
+  write nome + "\n";
 end
